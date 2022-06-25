@@ -1,0 +1,12 @@
+{
+  "name": "Firma",
+  "version": "0.0.1",
+  "description": "Firma documentos con plataforma Firma.Gob de Chile",
+  "main": "index.js",
+  "author": "Guillermo Parraguez",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.2"
+  }
+}
