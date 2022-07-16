@@ -36,10 +36,13 @@ gob.addPDF(file.base64, file.checksum); // agrega pdf
 const file = pdf.fromFile("pathToPdf");
 gob.addPDF(file.base64, file.checksum); // agrega pdf
 
-const response = await gob.sign();
+await gob.sign();
+
+// guardar archivos al disco
+gob.base64toFile();
 
 // leer respuesta recibida
-// console.log(await response.json());
+console.log(gob.outputRaw());
 
 ```
 
