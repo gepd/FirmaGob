@@ -12,28 +12,41 @@ git clone https://github.com/gepd/FirmaGob
 
 Importa la librería en tu código
 
+## FirmaGob
+
 ```js
-const { FirmaGob } = require("FirmaGob");
+const { FirmaGob, PDF } = require("FirmaGob");
 
 ```
 
-Por defecto la librería inicia con los parámetros de desarrollo con el certificado de propósito general, por lo que puedes comenzar a usarla para pruebas directamente
+Por defecto la librería inicia con los parámetros de desarrollo con el certificado desatendido, por lo que puedes comenzar a usarla para pruebas directamente
 
+> tuarchivo.js
 ```js
+const {FirmaGob, PDF} = new FirmaGob();
+
 const gob = new FirmaGob();
+const pdf = new PDF();
 
-const pdf = pdf codificado en base64
-const checksum = hash en sha256
+const file = await pdf.fromURL("linkToPdf");
+gob.addPDF(file.base64, file.checksum); // agrega pdf
 
-gob.addPDF(pdf, checksum); // agrega pdf
-const response = await gob.sign("123456"); // Código OTP
+// o también desde un archivo local
+
+const file = pdf.fromFile("pathToPdf");
+gob.addPDF(file.base64, file.checksum); // agrega pdf
+
+const response = await gob.sign();
+
+// leer respuesta recibida
+// console.log(await response.json());
 
 ```
 
 luego ya puedes ejecutar `node tuarchivo.js`
 
 
-Actualmente la API cuenta con los siguientes métodos
+Actualmente la API `FirmaGob` cuenta con los siguientes métodos
 
 ### setConfig
 
