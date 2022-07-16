@@ -3,8 +3,12 @@
     "target": "ES5",
     "module": "commonjs",
     "skipLibCheck": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "esModuleInterop": true,
-    "removeComments": true
-  }
+    "removeComments": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "declaration": true
+  },
+  "exclude": ["node_modules", "dist"]
 }
