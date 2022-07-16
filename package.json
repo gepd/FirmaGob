@@ -1,12 +1,35 @@
 {
-  "name": "Firma",
-  "version": "0.0.1",
-  "description": "Firma documentos con plataforma Firma.Gob de Chile",
+  "name": "firma-gob",
+  "version": "0.1.0",
+  "description": "Firma documentos con plataforma Firma.Gob del gobierno Chile",
   "main": "index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepublish": "tsc"
+  },
   "author": "Guillermo Parraguez",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@types/node-fetch": "^2.6.2"
-  }
+  },
+  "keywords": [
+    "firma",
+    "digital",
+    "chile",
+    "gobierno"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gepd/FirmaGob.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gepd/FirmaGob/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "branches": [
+      "master"
+    ]
+  },
+  "homepage": "https://github.com/gepd/FirmaGob#readme"
 }
