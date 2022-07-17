@@ -2,12 +2,15 @@
 
 Librería javascript para firmar documentos usando la API de Firma.Gob (Chile)
 
-La librería todavía está en desarrollo por lo que no la publicaré en NPM hasta tener una versión estable.
 
-para instalarla debes clonar este repositorio
+instalar
 
 ```js
-git clone https://github.com/gepd/FirmaGob
+// npm
+npm install firma-gob
+
+// yarn
+yarn add firma-gob
 ```
 
 Importa la librería en tu código
@@ -15,7 +18,7 @@ Importa la librería en tu código
 ## FirmaGob
 
 ```js
-const { FirmaGob, PDF } = require("FirmaGob");
+const { FirmaGob, PDF } = require("firma-gob");
 
 ```
 
@@ -36,20 +39,22 @@ gob.addPDF(file.base64, file.checksum); // agrega pdf
 const file = pdf.fromFile("pathToPdf");
 gob.addPDF(file.base64, file.checksum); // agrega pdf
 
-await gob.sign();
+// firmar documentos y recibir respuesta
+const output = await gob.sign();
 
-// guardar archivos al disco
-gob.base64toFile();
-
-// leer respuesta recibida
-console.log(gob.outputRaw());
+// guarda archivos con la clase PDF
+pdf.files.forEach((file) => {
+   base64ToFile(`file_${file.checksum_original}.pdf`,file.content)
+});
 
 ```
 
 luego ya puedes ejecutar `node tuarchivo.js`
 
 
-Actualmente la API `FirmaGob` cuenta con los siguientes métodos
+# FirmaGob
+
+Actualmente la clase `FirmaGob` cuenta con los siguientes métodos
 
 ### setConfig
 
@@ -82,6 +87,7 @@ gob.setPurpose(purpose: Purpose)
 ```
 
 ### addJSON
+
 Agrega un archivo JSON a la lista de archivos
    
    * **content** Archivo en base64
@@ -93,7 +99,7 @@ Agrega un archivo JSON a la lista de archivos
 
 ### addPDF
 
- Agrega un archivo PDF a la lista de archivos
+Agrega un archivo PDF a la lista de archivos
 
    * **content** Archivo en base64
    * **checksum** SHA256 del archivo
@@ -125,9 +131,9 @@ Agrega multiples archivos a la lista de archivos a ser firmados
   gob.addFiles(files: FileProps[])
   ```
 
-  ### sign
+### sign
 
-  Firma los archivos previamente establecidos
+Firma los archivos previamente establecidos
 
    * **otp** Si la firma es de propósito general necesitas enviar el código OTG
   
@@ -138,9 +144,85 @@ gob.signFiles(otp?: string)
 
 ```
 
+# PDF
+
+La clase `PDF` te ayudará a manipular tus archivos PDF para ser usados con `FirmaGob`
+
+```js
+// crea una instancia de la clase PDF
+const pdf = new PDF();
+```
+
+### fromFile
+
+Obtiene los datos de un archivo local y los convierte en base64
+
+   * **path** Ruta del archivo en tu disco
+  
+   * **Respuesta** objeto { base64, checksum }
+
+```ts
+pdf.fromFile(path: string) 
+
+```
+
+### fromURL
+
+Obtiene un archivo pdf desde un servidor remoto y lo convierte a base64 
+
+   * **url** URL del archivo PDF
+  
+   * **Respuesta** objeto { base64, checksum }
+
+```ts
+pdf.fromURL(url: string)
+
+```
+
+### base64ToBuffer
+
+Convierte un archivo en base64 a buffer
+
+   * **base64** archivo en base64
+  
+   * **Respuesta** buffer de archivo
+
+```ts
+pdf.base64ToBuffer(base64: string)
+
+```
+
+### bufferToFile
+
+  Usa el buffer dado y lo almacena en el disco con el nombre especificado
+
+   * **filename** nombre del archivo a guardar
+
+   * **buffer** buffer de archivo
+  
+
+```ts
+pdf.bufferToFile(filename: string, buffer: Buffer)
+
+```
+
+### base64ToFile
+
+  Almacena en el disco un archivo en base64
+
+   * **filename** nombre del archivo a guardar
+
+   * **base64** archivo en base64
+  
+
+```ts
+pdf.base64ToFile(filename: string, base64: string)
+
+```
+
 # Desarrollo
 
-La librería está escrita con typescript, al modificar el `index.ts` debes ejecutar `tsc` para recompilar el archiv `index.js` (debes tener instalado tsc)
+La librería está escrita con typescript, al modificar el `index.ts` debes ejecutar `tsc` para recompilar el archivo `index.js` (debes tener instalado tsc)
 
 Todos los comentarios y PR son bienvenidos.
 
