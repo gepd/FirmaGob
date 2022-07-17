@@ -88,7 +88,7 @@ export class File {
    * @param url dirección del archivo pdf
    * @returns objeto con archivo en base64 y checksum
    */
-  async fromURL(url: string) {
+  async fromRemote(url: string) {
     if (!this.isURL(url)) {
       throw new Error("La URL indicada no es válida");
     }
