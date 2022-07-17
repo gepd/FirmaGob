@@ -18,33 +18,34 @@ Importa la librería en tu código
 ## FirmaGob
 
 ```js
-const { FirmaGob, PDF } = require("firma-gob");
+const { FirmaGob, File } = require("firma-gob");
 
 ```
 
-Por defecto la librería inicia con los parámetros de desarrollo con el certificado desatendido, por lo que puedes comenzar a usarla para pruebas directamente
+Por defecto la librería inicia con los parámetros de desarrollo (certificado desatendido), por lo que puedes comenzar a usarla para pruebas directamente
 
-> tuarchivo.js
 ```js
-const {FirmaGob, PDF} = new FirmaGob();
+// tuarchivo.js
+
+const { FirmaGob, File } = new FirmaGob();
 
 const gob = new FirmaGob();
-const pdf = new PDF();
+const file = new File();
 
-const file = await pdf.fromURL("linkToPdf");
-gob.addPDF(file.base64, file.checksum); // agrega pdf
+const remote = await file.fromRemote("linkToPdf");
+gob.addPDF(remote.base64, remote.checksum); // agrega pdf
 
 // o también desde un archivo local
 
-const file = pdf.fromFile("pathToPdf");
-gob.addPDF(file.base64, file.checksum); // agrega pdf
+const local = file.fromLocal("pathToPdf");
+gob.addPDF(local.base64, local.checksum); // agrega pdf
 
 // firmar documentos y recibir respuesta
 const output = await gob.sign();
 
-// guarda archivos con la clase PDF
-pdf.files.forEach((file) => {
-   base64ToFile(`file_${file.checksum_original}.pdf`,file.content)
+// guarda archivos con la clase File
+output.files.forEach((item) => {
+   file.base64ToDisk(`file_${item.checksum_original}.pdf`,item.content)
 });
 
 ```
@@ -144,16 +145,16 @@ gob.signFiles(otp?: string)
 
 ```
 
-# PDF
+# File
 
-La clase `PDF` te ayudará a manipular tus archivos PDF para ser usados con `FirmaGob`
+La clase `File` te ayudará a manipular tus archivos para ser usados con `FirmaGob`
 
 ```js
-// crea una instancia de la clase PDF
-const pdf = new PDF();
+// crea una instancia de la clase File
+const file = new File();
 ```
 
-### fromFile
+### fromLocal
 
 Obtiene los datos de un archivo local y los convierte en base64
 
@@ -162,11 +163,11 @@ Obtiene los datos de un archivo local y los convierte en base64
    * **Respuesta** objeto { base64, checksum }
 
 ```ts
-pdf.fromFile(path: string) 
+pdf.fromLocal(path: string) 
 
 ```
 
-### fromURL
+### fromRemote
 
 Obtiene un archivo pdf desde un servidor remoto y lo convierte a base64 
 
@@ -175,7 +176,7 @@ Obtiene un archivo pdf desde un servidor remoto y lo convierte a base64
    * **Respuesta** objeto { base64, checksum }
 
 ```ts
-pdf.fromURL(url: string)
+pdf.fromRemote(url: string)
 
 ```
 
@@ -192,7 +193,7 @@ pdf.base64ToBuffer(base64: string)
 
 ```
 
-### bufferToFile
+### bufferToDisk
 
   Usa el buffer dado y lo almacena en el disco con el nombre especificado
 
@@ -202,11 +203,11 @@ pdf.base64ToBuffer(base64: string)
   
 
 ```ts
-pdf.bufferToFile(filename: string, buffer: Buffer)
+pdf.bufferToDisk(filename: string, buffer: Buffer)
 
 ```
 
-### base64ToFile
+### base64ToDisk
 
   Almacena en el disco un archivo en base64
 
@@ -216,7 +217,7 @@ pdf.bufferToFile(filename: string, buffer: Buffer)
   
 
 ```ts
-pdf.base64ToFile(filename: string, base64: string)
+pdf.base64ToDisk(filename: string, base64: string)
 
 ```
 
