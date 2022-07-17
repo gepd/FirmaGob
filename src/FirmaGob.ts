@@ -1,6 +1,5 @@
 import { createHmac } from "crypto";
 import fetch from "node-fetch";
-import { writeFileSync } from "fs";
 
 enum Environment {
   TEST = 0,
@@ -51,7 +50,6 @@ export class FirmaGob {
   private api_token_key = "sandbox";
   private secret = "27a216342c744f89b7b82fa290519ba0";
   private files: FileProps[] = [];
-  private output: FileOutputProps;
 
   constructor() {}
 
@@ -148,7 +146,7 @@ export class FirmaGob {
    * @param otp Si la firma es de propósito general necesitas enviar el código OTG
    * @returns Respuesta con documentos firmados o errores
    */
-  async signFiles(otp?: string) {
+  async signFiles(otp?: string): Promise<FileOutputProps> {
     if (this.environment === Environment.TEST) {
       console.warn(
         "Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig"
@@ -209,17 +207,7 @@ export class FirmaGob {
     });
 
     const response = await fetch(this.url, { method: "post", body, headers });
-    this.output = await response.json();
-  }
 
-  outputRaw() {
-    return this.output;
-  }
-
-  base64toFile() {
-    this.output.files.forEach((file) => {
-      const buffer = Buffer.from(file.content, "base64");
-      writeFileSync(`${file.checksum_original}.pdf`, buffer);
-    });
+    return await response.json();
   }
 }
