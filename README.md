@@ -228,6 +228,10 @@ Todos los comentarios y PR son bienvenidos.
 
 La idea es ir complementando la librería para poder manejar con mayor facilidad cada archivo
 
+# Más información
+
+Para obtener más información acerca de esta API pudes descargar los manuales en https://firma.digital.gob.cl/biblioteca/manuales-firmagob/
+
 # Licencia
 
 Este proyecto está liberado bajo la licencia MIT, quiere decir que puedes hacer lo que quieras (incluso comercialmente)
