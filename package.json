@@ -1,6 +1,6 @@
 {
   "name": "firma-gob",
-  "version": "1.0.0-0",
+  "version": "1.0.0",
   "description": "Firma documentos con plataforma Firma.Gob del gobierno Chile",
   "main": "index.js",
   "types": "dist/index.d.ts",
