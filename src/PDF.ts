@@ -100,4 +100,13 @@ export class PDF {
 
     return { base64, checksum };
   }
+
+  /**
+   * Convierte un archivo base64 en buffer
+   * @param base64 archivo en base64
+   * @returns buffer de archivo
+   */
+  base64ToBuffer(base64: string) {
+    return Buffer.from(base64, "base64");
+  }
 }
