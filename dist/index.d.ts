@@ -1,3 +1,3 @@
 import { FirmaGob } from "./FirmaGob";
-import { PDF } from "./PDF";
-export { PDF, FirmaGob };
+import { File } from "./File";
+export { File, FirmaGob };
