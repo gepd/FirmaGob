@@ -1,4 +1,4 @@
 import { FirmaGob } from "./FirmaGob";
-import { PDF } from "./PDF";
+import { File } from "./File";
 
-export { PDF, FirmaGob };
+export { File, FirmaGob };

@@ -3,7 +3,7 @@ import fileSystem from "fs";
 import fetch from "node-fetch";
 import { resolve } from "path";
 
-export class PDF {
+export class File {
   /**
    * Verifica si la URL enviada es válida o no
    * @param url link a vertificar
