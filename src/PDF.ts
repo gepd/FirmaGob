@@ -71,7 +71,7 @@ export class PDF {
    * @returns objeto con archivo en base64 y checksum
    */
   fromFile(path: string) {
-    if (!fileSystem.statSync(path).isFile()) {
+    if (!fileSystem.statSync(path).isFile() && !this.isPDF(path)) {
       throw new Error("La ruta indicada no es un archivo válido");
     }
 
@@ -119,4 +119,13 @@ export class PDF {
     fileSystem.writeFileSync(filename, buffer);
   }
 
+  /**
+   * Guarda un archivo base64 al disco
+   * @param filename nombre del archivo
+   * @param base64 archivi en base64
+   */
+  base64ToFile(filename: string, base64: string) {
+    const buffer = this.base64ToBuffer(base64);
+    this.bufferToFile(filename, buffer);
+  }
 }
