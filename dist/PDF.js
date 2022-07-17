@@ -79,7 +79,7 @@ var PDF = (function () {
         return Buffer.from(buffer).toString("base64");
     };
     PDF.prototype.fromFile = function (path) {
-        if (!fs_1.default.statSync(path).isFile()) {
+        if (!fs_1.default.statSync(path).isFile() && !this.isPDF(path)) {
             throw new Error("La ruta indicada no es un archivo válido");
         }
         var bufferFile = this.readFile(path);
@@ -105,6 +105,16 @@ var PDF = (function () {
                 }
             });
         });
+    };
+    PDF.prototype.base64ToBuffer = function (base64) {
+        return Buffer.from(base64, "base64");
+    };
+    PDF.prototype.bufferToFile = function (filename, buffer) {
+        fs_1.default.writeFileSync(filename, buffer);
+    };
+    PDF.prototype.base64ToFile = function (filename, base64) {
+        var buffer = this.base64ToBuffer(base64);
+        this.bufferToFile(filename, buffer);
     };
     return PDF;
 }());

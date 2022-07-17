@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export declare class PDF {
     private isURL;
     private isPDF;
@@ -13,4 +14,7 @@ export declare class PDF {
         base64: string;
         checksum: string;
     }>;
+    base64ToBuffer(base64: string): Buffer;
+    bufferToFile(filename: string, buffer: Buffer): void;
+    base64ToFile(filename: string, base64: string): void;
 }

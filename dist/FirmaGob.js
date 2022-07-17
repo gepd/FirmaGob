@@ -42,7 +42,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirmaGob = void 0;
 var crypto_1 = require("crypto");
 var node_fetch_1 = __importDefault(require("node-fetch"));
-var fs_1 = require("fs");
 var Environment;
 (function (Environment) {
     Environment[Environment["TEST"] = 0] = "TEST";
@@ -106,9 +105,9 @@ var FirmaGob = (function () {
     };
     FirmaGob.prototype.signFiles = function (otp) {
         return __awaiter(this, void 0, void 0, function () {
-            var header, THIRTY_MINUTES, expiration, tzoffset, payload, header_str, header_enc, payload_str, payload_enc, unsigned_token, signature_str, signature_enc, token, headers, body, response, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var header, THIRTY_MINUTES, expiration, tzoffset, payload, header_str, header_enc, payload_str, payload_enc, unsigned_token, signature_str, signature_enc, token, headers, body, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         if (this.environment === Environment.TEST) {
                             console.warn("Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig");
@@ -151,23 +150,11 @@ var FirmaGob = (function () {
                         });
                         return [4, node_fetch_1.default(this.url, { method: "post", body: body, headers: headers })];
                     case 1:
-                        response = _b.sent();
-                        _a = this;
+                        response = _a.sent();
                         return [4, response.json()];
-                    case 2:
-                        _a.output = _b.sent();
-                        return [2];
+                    case 2: return [2, _a.sent()];
                 }
             });
-        });
-    };
-    FirmaGob.prototype.outputRaw = function () {
-        return this.output;
-    };
-    FirmaGob.prototype.base64toFile = function () {
-        this.output.files.forEach(function (file) {
-            var buffer = Buffer.from(file.content, "base64");
-            fs_1.writeFileSync(file.checksum_original + ".pdf", buffer);
         });
     };
     return FirmaGob;
