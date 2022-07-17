@@ -65,7 +65,7 @@ export class File {
   }
 
   /**
-   * Obtiene los datos de un archivo y los convierte en base64
+   * Obtiene los datos de un archivo local y los convierte en base64
    * además retorna el checksum del arhivo
    * @param path ruta del archivo
    * @returns objeto con archivo en base64 y checksum
