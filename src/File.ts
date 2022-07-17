@@ -124,8 +124,8 @@ export class File {
    * @param filename nombre del archivo
    * @param base64 archivi en base64
    */
-  base64ToFile(filename: string, base64: string) {
+  base64ToDisk(filename: string, base64: string) {
     const buffer = this.base64ToBuffer(base64);
-    this.bufferToFile(filename, buffer);
+    this.bufferToDisk(filename, buffer);
   }
 }
