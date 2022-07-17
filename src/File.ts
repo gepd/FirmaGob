@@ -115,7 +115,7 @@ export class File {
    * @param filename nombre del archivo a guardar
    * @param buffer buffer a guardar
    */
-  bufferToFile(filename: string, buffer: Buffer) {
+  bufferToDisk(filename: string, buffer: Buffer) {
     fileSystem.writeFileSync(filename, buffer);
   }
 
