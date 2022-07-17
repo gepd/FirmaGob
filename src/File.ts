@@ -70,7 +70,7 @@ export class File {
    * @param path ruta del archivo
    * @returns objeto con archivo en base64 y checksum
    */
-  fromFile(path: string) {
+  fromLocal(path: string) {
     if (!fileSystem.statSync(path).isFile() && !this.isPDF(path)) {
       throw new Error("La ruta indicada no es un archivo válido");
     }
