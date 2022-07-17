@@ -1,3 +1,17 @@
+## 1.2.0
+
+- 🚧 Renombrado método `base64ToFile` a `base64ToDisk`  482287a
+- 🚧 Renombrado método `bufferToFile` a `bufferToDisk`  df962fa
+- 🚧 Renombrado Método `fromURL` a `fromRemote`  f71222a
+-  🚧Renombrado método `fromFile` a `fromLocal`  17ef572
+- 🚧 Renombrada clase `PDF` a `File`  ab7f2f9
+- 🚧 Ignorar node_modules y archivos fuentes en npm  905711b
+- 📄Documentación actualizada  76782db
+- 📄Actualización menor de la documentación  c162149
+- 📄 Agregada referencia a manuales en firma.gob .cl  7d5da3a
+- 🚧 actualizado código fuente y types  f6f10f6
+- 🚧 Corregido número versión para publicar de06723
+
 ## 1.0.0
 
 -  🚧Actualizados pasos de instalación  0b54c20
