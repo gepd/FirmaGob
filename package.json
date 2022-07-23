@@ -2,7 +2,7 @@
   "name": "firma-gob",
   "version": "1.2.1",
   "description": "Firma documentos con plataforma Firma.Gob del gobierno Chile",
-  "main": "index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "tsc"
