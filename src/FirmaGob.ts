@@ -1,5 +1,4 @@
 import { createHmac } from "crypto";
-import fetch from "node-fetch";
 
 enum Environment {
   TEST = 0,
@@ -74,8 +73,12 @@ export class FirmaGob {
    *                Purpose.ATENDIDO (Propósito general)
    *                Purpose.DESATENDIDO (Desatendido)
    */
-  setPurpose(purpose: Purpose) {
-    this.purpose = purpose;
+  setPurpose(purpose: 'ATENDIDO' | 'DESATENDIDO') {
+    if(purpose === 'ATENDIDO'){
+      this.purpose = Purpose.ATENDIDO
+    }else{
+      this.purpose = Purpose.DESATENDIDO
+    }
   }
 
   /**
