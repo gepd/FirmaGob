@@ -72,7 +72,7 @@ modifica los parametros de configuración de la librería.
 gob.setConfig(run: string, entity: string, api_token: string, secret: string)
 ```
 
-### setPurpose (Propósito General por defecto)
+### setPurpose (Propósito Desatendido por defecto)
 
 Establece si el certificado es de proposito general o desatendido
    * **purpose** código asociado al tipo de certificado a utilizar
