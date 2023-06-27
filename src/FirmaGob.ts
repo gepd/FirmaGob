@@ -1,5 +1,5 @@
-import { createHmac } from "crypto";
-import fetch from "node-fetch";
+import { createHmac } from "crypto"
+import fetch from "node-fetch"
 
 enum Environment {
   TEST = 0,
@@ -12,44 +12,45 @@ enum Purpose {
 }
 
 interface FileProps {
-  "content-type": string;
-  content: string;
-  description: string;
-  checksum: string;
-  layout?: string;
-  references?: string[];
-  xmlObjects?: string[];
+  "content-type": string
+  content: string
+  description: string
+  checksum: string
+  layout?: string
+  references?: string[]
+  xmlObjects?: string[]
 }
 
 interface FileInProps {
-  content: string;
-  status: string;
-  contentType: string;
-  documentStatus: string;
-  checksum_original: string;
+  content: string
+  status: string
+  contentType: string
+  documentStatus: string
+  checksum_original: string
 }
 
 interface MetadataProps {
-  otpExpired: boolean;
-  filesSigned: number;
-  signedFailed: number;
-  objectReceived: number;
+  otpExpired: boolean
+  filesSigned: number
+  signedFailed: number
+  objectReceived: number
 }
 
 interface FileOutputProps {
-  files: FileInProps[];
-  metadata: MetadataProps;
+  files: FileInProps[]
+  metadata: MetadataProps
+  status: number
 }
 
 export class FirmaGob {
-  private url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
-  private environment = Environment.TEST;
-  private entity = "Subsecretaría General de la Presidencia";
-  private run = "22222222";
-  private purpose = Purpose.DESATENDIDO;
-  private api_token_key = "sandbox";
-  private secret = "27a216342c744f89b7b82fa290519ba0";
-  private files: FileProps[] = [];
+  private url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets"
+  private environment = Environment.TEST
+  private entity = "Subsecretaría General de la Presidencia"
+  private run = "22222222"
+  private purpose = Purpose.DESATENDIDO
+  private api_token_key = "sandbox"
+  private secret = "27a216342c744f89b7b82fa290519ba0"
+  private files: FileProps[] = []
 
   constructor() {}
 
@@ -61,11 +62,11 @@ export class FirmaGob {
    * @param secret secreto generado por firma.gob al registrar la aplicación
    */
   setConfig(run: string, entity: string, api_token: string, secret: string) {
-    this.run = run;
-    this.entity = entity;
-    this.api_token_key = api_token;
-    this.secret = secret;
-    this.environment = Environment.PRODUCTION;
+    this.run = run
+    this.entity = entity
+    this.api_token_key = api_token
+    this.secret = secret
+    this.environment = Environment.PRODUCTION
   }
 
   /**
@@ -75,7 +76,7 @@ export class FirmaGob {
    *                Purpose.DESATENDIDO (Desatendido)
    */
   setPurpose(purpose: Purpose) {
-    this.purpose = purpose;
+    this.purpose = purpose
   }
 
   /**
@@ -89,7 +90,7 @@ export class FirmaGob {
       description: "str",
       content,
       checksum,
-    });
+    })
   }
 
   /**
@@ -105,7 +106,7 @@ export class FirmaGob {
       content,
       checksum,
       layout,
-    });
+    })
   }
 
   /**
@@ -130,7 +131,7 @@ export class FirmaGob {
       checksum,
       references,
       xmlObjects,
-    });
+    })
   }
 
   /**
@@ -138,7 +139,7 @@ export class FirmaGob {
    * @param files Lista de archivos a firmar
    */
   addFiles(files: FileProps[]) {
-    this.files = files;
+    this.files = files
   }
 
   /**
@@ -150,64 +151,64 @@ export class FirmaGob {
     if (this.environment === Environment.TEST) {
       console.warn(
         "Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig"
-      );
+      )
     }
 
     if (this.purpose === Purpose.ATENDIDO && !otp) {
       throw new Error(
         "Los certificados de propósito general requieren de un código OTG"
-      );
+      )
     }
 
     const header = {
       alg: "HS256",
       typ: "JWT",
-    };
+    }
 
-    const THIRTY_MINUTES = 29 * 60 * 1000;
-    const expiration = new Date();
-    const tzoffset = new Date().getTimezoneOffset() * 60000; // Para obtener hora local
+    const THIRTY_MINUTES = 29 * 60 * 1000
+    const expiration = new Date()
+    const tzoffset = new Date().getTimezoneOffset() * 60000 // Para obtener hora local
 
-    expiration.setTime(expiration.getTime() - tzoffset + THIRTY_MINUTES); // Agrega 30 minutos
+    expiration.setTime(expiration.getTime() - tzoffset + THIRTY_MINUTES) // Agrega 30 minutos
 
     const payload = {
       entity: this.entity,
       run: this.run,
       purpose: this.purpose,
       expiration: expiration.toISOString(),
-    };
+    }
 
-    const header_str = JSON.stringify(header);
-    const header_enc = Buffer.from(header_str).toString("base64");
+    const header_str = JSON.stringify(header)
+    const header_enc = Buffer.from(header_str).toString("base64")
 
-    const payload_str = JSON.stringify(payload);
+    const payload_str = JSON.stringify(payload)
     const payload_enc = Buffer.from(payload_str)
       .toString("base64")
-      .replace(/\=/g, "");
+      .replace(/\=/g, "")
 
-    const unsigned_token = `${header_enc}.${payload_enc}`;
+    const unsigned_token = `${header_enc}.${payload_enc}`
 
     const signature_str = createHmac("sha256", this.secret).update(
       unsigned_token
-    );
-    const signature_enc = signature_str.digest("base64").replace(/\=/g, "");
+    )
+    const signature_enc = signature_str.digest("base64").replace(/\=/g, "")
 
-    const token = `${unsigned_token}.${signature_enc}`;
+    const token = `${unsigned_token}.${signature_enc}`
 
-    const headers: HeadersInit = { "Content-Type": "application/json" };
+    const headers: HeadersInit = { "Content-Type": "application/json" }
 
     if (this.purpose === Purpose.ATENDIDO) {
-      headers.OTP = otp;
+      headers.OTP = otp
     }
 
     const body = JSON.stringify({
       api_token_key: this.api_token_key,
       files: this.files,
       token,
-    });
+    })
 
-    const response = await fetch(this.url, { method: "post", body, headers });
+    const response = await fetch(this.url, { method: "post", body, headers })
 
-    return await response.json();
+    return await { ...response.json(), status: response.status }
   }
 }
