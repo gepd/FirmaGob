@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,7 +25,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -39,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FirmaGob = void 0;
+exports.FirmaGob = exports.Purpose = void 0;
 var crypto_1 = require("crypto");
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var Environment;
@@ -51,7 +62,7 @@ var Purpose;
 (function (Purpose) {
     Purpose["ATENDIDO"] = "Prop\u00F3sito General";
     Purpose["DESATENDIDO"] = "Desatendido";
-})(Purpose || (Purpose = {}));
+})(Purpose || (exports.Purpose = Purpose = {}));
 var FirmaGob = (function () {
     function FirmaGob() {
         this.url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
@@ -135,10 +146,10 @@ var FirmaGob = (function () {
                         payload_enc = Buffer.from(payload_str)
                             .toString("base64")
                             .replace(/\=/g, "");
-                        unsigned_token = header_enc + "." + payload_enc;
-                        signature_str = crypto_1.createHmac("sha256", this.secret).update(unsigned_token);
+                        unsigned_token = "".concat(header_enc, ".").concat(payload_enc);
+                        signature_str = (0, crypto_1.createHmac)("sha256", this.secret).update(unsigned_token);
                         signature_enc = signature_str.digest("base64").replace(/\=/g, "");
-                        token = unsigned_token + "." + signature_enc;
+                        token = "".concat(unsigned_token, ".").concat(signature_enc);
                         headers = { "Content-Type": "application/json" };
                         if (this.purpose === Purpose.ATENDIDO) {
                             headers.OTP = otp;
@@ -148,10 +159,10 @@ var FirmaGob = (function () {
                             files: this.files,
                             token: token,
                         });
-                        return [4, node_fetch_1.default(this.url, { method: "post", body: body, headers: headers })];
+                        return [4, (0, node_fetch_1.default)(this.url, { method: "post", body: body, headers: headers })];
                     case 1:
                         response = _a.sent();
-                        return [4, response.json()];
+                        return [4, __assign(__assign({}, response.json()), { status: response.status })];
                     case 2: return [2, _a.sent()];
                 }
             });

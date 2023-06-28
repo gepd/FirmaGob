@@ -6,7 +6,7 @@ enum Environment {
   PRODUCTION = 1,
 }
 
-enum Purpose {
+export enum Purpose {
   ATENDIDO = "Propósito General",
   DESATENDIDO = "Desatendido",
 }
