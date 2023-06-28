@@ -210,6 +210,6 @@ export class FirmaGob {
 
     const response = await fetch(this.url, { method: "post", body, headers })
 
-    return await { ...response.json(), status: response.status }
+    return { ...(await response.json()), status: response.status }
   }
 }

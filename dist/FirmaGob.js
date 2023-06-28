@@ -116,9 +116,9 @@ var FirmaGob = (function () {
     };
     FirmaGob.prototype.signFiles = function (otp) {
         return __awaiter(this, void 0, void 0, function () {
-            var header, THIRTY_MINUTES, expiration, tzoffset, payload, header_str, header_enc, payload_str, payload_enc, unsigned_token, signature_str, signature_enc, token, headers, body, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var header, THIRTY_MINUTES, expiration, tzoffset, payload, header_str, header_enc, payload_str, payload_enc, unsigned_token, signature_str, signature_enc, token, headers, body, response, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         if (this.environment === Environment.TEST) {
                             console.warn("Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig");
@@ -161,9 +161,10 @@ var FirmaGob = (function () {
                         });
                         return [4, (0, node_fetch_1.default)(this.url, { method: "post", body: body, headers: headers })];
                     case 1:
-                        response = _a.sent();
-                        return [4, __assign(__assign({}, response.json()), { status: response.status })];
-                    case 2: return [2, _a.sent()];
+                        response = _b.sent();
+                        _a = [{}];
+                        return [4, response.json()];
+                    case 2: return [2, __assign.apply(void 0, [__assign.apply(void 0, _a.concat([(_b.sent())])), { status: response.status }])];
                 }
             });
         });
