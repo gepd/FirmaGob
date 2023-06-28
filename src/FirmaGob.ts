@@ -40,6 +40,7 @@ interface FileOutputProps {
   files: FileInProps[]
   metadata: MetadataProps
   status: number
+  error?: string
 }
 
 export class FirmaGob {

@@ -28,6 +28,7 @@ interface FileOutputProps {
     files: FileInProps[];
     metadata: MetadataProps;
     status: number;
+    error?: string;
 }
 export declare class FirmaGob {
     private url;
