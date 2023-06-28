@@ -29,6 +29,7 @@ interface FileOutputProps {
     metadata: MetadataProps;
     status: number;
     error?: string;
+    idSolicitud?: number;
 }
 export declare class FirmaGob {
     private url;

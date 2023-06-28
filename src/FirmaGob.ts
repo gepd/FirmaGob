@@ -41,6 +41,7 @@ interface FileOutputProps {
   metadata: MetadataProps
   status: number
   error?: string
+  idSolicitud?: number
 }
 
 export class FirmaGob {
