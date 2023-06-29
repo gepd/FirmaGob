@@ -45,7 +45,7 @@ interface FileOutputProps {
 }
 
 export class FirmaGob {
-  private url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets"
+  private url = "https://api.firma.digital.gob.cl/firma/v2/files/tickets"
   private environment = Environment.TEST
   private entity = "Subsecretaría General de la Presidencia"
   private run = "22222222"
@@ -158,7 +158,7 @@ export class FirmaGob {
 
     if (this.purpose === Purpose.ATENDIDO && !otp) {
       throw new Error(
-        "Los certificados de propósito general requieren de un código OTG"
+        "Los certificados de propósito general requieren de un código OTP"
       )
     }
 
