@@ -65,7 +65,7 @@ var Purpose;
 })(Purpose || (exports.Purpose = Purpose = {}));
 var FirmaGob = (function () {
     function FirmaGob() {
-        this.url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
+        this.url = "https://api.firma.digital.gob.cl/firma/v2/files/tickets";
         this.environment = Environment.TEST;
         this.entity = "Subsecretaría General de la Presidencia";
         this.run = "22222222";
@@ -124,7 +124,7 @@ var FirmaGob = (function () {
                             console.warn("Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig");
                         }
                         if (this.purpose === Purpose.ATENDIDO && !otp) {
-                            throw new Error("Los certificados de propósito general requieren de un código OTG");
+                            throw new Error("Los certificados de propósito general requieren de un código OTP");
                         }
                         header = {
                             alg: "HS256",
