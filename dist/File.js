@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -55,7 +55,7 @@ var File = (function () {
     };
     File.prototype.readFile = function (path) {
         if (fs_1.default.statSync(path).isFile()) {
-            return fs_1.default.readFileSync(path_1.resolve(path));
+            return fs_1.default.readFileSync((0, path_1.resolve)(path));
         }
         return null;
     };
@@ -64,7 +64,7 @@ var File = (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, node_fetch_1.default(url)];
+                    case 0: return [4, (0, node_fetch_1.default)(url)];
                     case 1:
                         response = _a.sent();
                         return [2, response.buffer()];
@@ -73,7 +73,7 @@ var File = (function () {
         });
     };
     File.prototype.bufferChecksum = function (buffer) {
-        return crypto_1.createHash("sha256").update(buffer).digest("hex");
+        return (0, crypto_1.createHash)("sha256").update(buffer).digest("hex");
     };
     File.prototype.bufferToBase64 = function (buffer) {
         return Buffer.from(buffer).toString("base64");

@@ -10,7 +10,8 @@
   "author": "Guillermo Parraguez",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "typescript": "^5.1.5"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.2"

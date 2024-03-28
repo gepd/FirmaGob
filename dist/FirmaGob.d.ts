@@ -1,4 +1,4 @@
-declare enum Purpose {
+export declare enum Purpose {
     ATENDIDO = "Prop\u00F3sito General",
     DESATENDIDO = "Desatendido"
 }
@@ -27,6 +27,9 @@ interface MetadataProps {
 interface FileOutputProps {
     files: FileInProps[];
     metadata: MetadataProps;
+    status: number;
+    error?: string;
+    idSolicitud?: number;
 }
 export declare class FirmaGob {
     private url;

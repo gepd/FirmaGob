@@ -1,3 +1,3 @@
-import { FirmaGob } from "./FirmaGob";
+import { FirmaGob, Purpose } from "./FirmaGob";
 import { File } from "./File";
-export { File, FirmaGob };
+export { File, FirmaGob, Purpose };
