@@ -1,6 +1,6 @@
 {
   "name": "firma-gob",
-  "version": "1.3.0",
+  "version": "1.2.4",
   "description": "Firma documentos con plataforma Firma.Gob del gobierno Chile",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,5 +36,10 @@
       "master"
     ]
   },
-  "homepage": "https://github.com/gepd/FirmaGob#readme"
+  "homepage": "https://github.com/gepd/FirmaGob#readme",
+  "release-it": {
+    "github": {
+      "release": true
+    }
+  }
 }
