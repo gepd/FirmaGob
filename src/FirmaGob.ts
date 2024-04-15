@@ -143,7 +143,7 @@ export class FirmaGob {
 
   /**
    * Firma los archivos previamente establecidos
-   * @param otp Si la firma es de propósito general necesitas enviar el código OTG
+   * @param otp Si la firma es de propósito general necesitas enviar el código OTP
    * @returns Respuesta con documentos firmados o errores
    */
   async signFiles(otp?: string): Promise<FileOutputProps> {
@@ -155,7 +155,7 @@ export class FirmaGob {
 
     if (this.purpose === Purpose.ATENDIDO && !otp) {
       throw new Error(
-        "Los certificados de propósito general requieren de un código OTG"
+        "Los certificados de propósito general requieren de un código OTP"
       );
     }
 
