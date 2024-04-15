@@ -41,6 +41,9 @@
   "release-it": {
     "github": {
       "release": true
+    },
+    "git": {
+      "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}"
     }
   }
 }
