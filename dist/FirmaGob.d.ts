@@ -1,4 +1,4 @@
-declare enum Purpose {
+export declare enum Purpose {
     ATENDIDO = "Prop\u00F3sito General",
     DESATENDIDO = "Desatendido"
 }
