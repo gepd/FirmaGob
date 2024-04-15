@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "tsc"
+    "prepublish": "tsc",
+    "release": "release-it"
   },
   "author": "Guillermo Parraguez",
   "license": "MIT",
@@ -13,7 +14,8 @@
     "node-fetch": "2.6.7"
   },
   "devDependencies": {
-    "@types/node-fetch": "^2.6.2"
+    "@types/node-fetch": "^2.6.2",
+    "release-it": "^17.2.0"
   },
   "keywords": [
     "firma",
