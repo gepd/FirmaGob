@@ -78,14 +78,31 @@ var File = (function () {
     File.prototype.bufferToBase64 = function (buffer) {
         return Buffer.from(buffer).toString("base64");
     };
-    File.prototype.fromLocal = function (path) {
+    File.prototype.fromLocalToBuffer = function (path) {
         if (!fs_1.default.statSync(path).isFile() && !this.isPDF(path)) {
             throw new Error("La ruta indicada no es un archivo válido");
         }
-        var bufferFile = this.readFile(path);
+        return this.readFile(path);
+    };
+    File.prototype.fromLocal = function (path) {
+        var bufferFile = this.fromLocalToBuffer(path);
         var base64 = this.bufferToBase64(bufferFile);
         var checksum = this.bufferChecksum(bufferFile);
         return { base64: base64, checksum: checksum };
+    };
+    File.prototype.fromLocalToHash = function (path) {
+        var bufferFile = this.fromLocalToBuffer(path);
+        return this.bufferChecksum(bufferFile);
+    };
+    File.prototype.fromRemoteToBuffer = function (url) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (!this.isURL(url)) {
+                    throw new Error("La URL indicada no es válida");
+                }
+                return [2, this.readURL(url)];
+            });
+        });
     };
     File.prototype.fromRemote = function (url) {
         return __awaiter(this, void 0, void 0, function () {
@@ -96,12 +113,29 @@ var File = (function () {
                         if (!this.isURL(url)) {
                             throw new Error("La URL indicada no es válida");
                         }
-                        return [4, this.readURL(url)];
+                        return [4, this.fromRemoteToBuffer(url)];
                     case 1:
                         bufferFile = _a.sent();
                         base64 = this.bufferToBase64(bufferFile);
                         checksum = this.bufferChecksum(bufferFile);
                         return [2, { base64: base64, checksum: checksum }];
+                }
+            });
+        });
+    };
+    File.prototype.fromRemoteToHash = function (url) {
+        return __awaiter(this, void 0, void 0, function () {
+            var bufferFile;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.isURL(url)) {
+                            throw new Error("La URL indicada no es válida");
+                        }
+                        return [4, this.fromRemoteToBuffer(url)];
+                    case 1:
+                        bufferFile = _a.sent();
+                        return [2, this.bufferChecksum(bufferFile)];
                 }
             });
         });

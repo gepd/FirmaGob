@@ -65,22 +65,54 @@ export class File {
   }
 
   /**
+   * Obtiene los datos de un archivo local y los convierte a un buffer
+   * @param path ruta del archivo
+   * @returns objeto buffer
+   */
+  private fromLocalToBuffer(path: string) {
+    if (!fileSystem.statSync(path).isFile() && !this.isPDF(path)) {
+      throw new Error("La ruta indicada no es un archivo válido");
+    }
+
+    return this.readFile(path);
+  }
+
+  /**
    * Obtiene los datos de un archivo local y los convierte en base64
    * además retorna el checksum del arhivo
    * @param path ruta del archivo
    * @returns objeto con archivo en base64 y checksum
    */
   fromLocal(path: string) {
-    if (!fileSystem.statSync(path).isFile() && !this.isPDF(path)) {
-      throw new Error("La ruta indicada no es un archivo válido");
-    }
-
-    const bufferFile = this.readFile(path);
-
+    const bufferFile = this.fromLocalToBuffer(path);
     const base64 = this.bufferToBase64(bufferFile);
     const checksum = this.bufferChecksum(bufferFile);
 
     return { base64, checksum };
+  }
+
+  /**
+   * Obtiene los datos de un archivo local y calcula su hash (checksum)
+   * @param path ruta del archivo
+   * @returns hash del archivo (checksum)
+   */
+  fromLocalToHash(path: string) {
+    const bufferFile = this.fromLocalToBuffer(path);
+    return this.bufferChecksum(bufferFile);
+  }
+
+  /**
+   * Obtiene los datos de un archivo remoto (URL) y los convierte
+   * a un buffer
+   * @param path ruta del archivo
+   * @returns objeto buffer
+   */
+  private async fromRemoteToBuffer(url: string) {
+    if (!this.isURL(url)) {
+      throw new Error("La URL indicada no es válida");
+    }
+
+    return this.readURL(url);
   }
 
   /**
@@ -93,12 +125,27 @@ export class File {
       throw new Error("La URL indicada no es válida");
     }
 
-    const bufferFile = await this.readURL(url);
+    const bufferFile = await this.fromRemoteToBuffer(url);
 
     const base64 = this.bufferToBase64(bufferFile);
     const checksum = this.bufferChecksum(bufferFile);
 
     return { base64, checksum };
+  }
+
+  /**
+   * Obtiene un archivo desde una URL y calcula su hash (checksum)
+   * @param url dirección del archivo pdf
+   * @returns hash del archivo (checksum)
+   */
+  async fromRemoteToHash(url: string) {
+    if (!this.isURL(url)) {
+      throw new Error("La URL indicada no es válida");
+    }
+
+    const bufferFile = await this.fromRemoteToBuffer(url);
+
+    return this.bufferChecksum(bufferFile);
   }
 
   /**
