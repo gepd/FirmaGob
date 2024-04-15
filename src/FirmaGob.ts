@@ -39,6 +39,9 @@ interface MetadataProps {
 interface FileOutputProps {
   files: FileInProps[];
   metadata: MetadataProps;
+  status: number;
+  error?: string;
+  idSolicitud?: number;
 }
 
 export class FirmaGob {
@@ -207,7 +210,9 @@ export class FirmaGob {
     });
 
     const response = await fetch(this.url, { method: "post", body, headers });
+    const responseJson = await response.json();
+    const status = response.status;
 
-    return await response.json();
+    return { ...responseJson, status };
   }
 }
