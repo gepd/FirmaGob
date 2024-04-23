@@ -11,7 +11,7 @@ export enum Purpose {
   DESATENDIDO = "Desatendido",
 }
 
-interface FileProps {
+type FileProps = {
   "content-type": string;
   content: string;
   description: string;
@@ -21,7 +21,7 @@ interface FileProps {
   xmlObjects?: string[];
 }
 
-interface FileInProps {
+type FileInProps = {
   content: string;
   status: "OK" | "error";
   contentType: string;
@@ -29,15 +29,14 @@ interface FileInProps {
   checksum_original: string;
 }
 
-interface MetadataProps {
+type MetadataProps = {
   otpExpired: boolean;
   filesSigned: number;
   signedFailed: number;
   objectReceived: number;
 }
 
-interface FileOutputProps {
-  files: FileInProps[];
+type OutputProps = {
   metadata: MetadataProps;
   status: number;
   error?: string;
