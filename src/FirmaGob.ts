@@ -23,7 +23,7 @@ interface FileProps {
 
 interface FileInProps {
   content: string;
-  status: string;
+  status: "OK" | "error";
   contentType: string;
   documentStatus: string;
   checksum_original: string;
