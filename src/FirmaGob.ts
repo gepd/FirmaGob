@@ -14,34 +14,48 @@ export enum Purpose {
 type FileProps = {
   "content-type": string;
   content: string;
-  description: string;
-  checksum: string;
+  description?: string;
+  checksum?: string;
   layout?: string;
   references?: string[];
   xmlObjects?: string[];
-}
+};
 
 type FileInProps = {
   content: string;
   status: "OK" | "error";
   contentType: string;
   documentStatus: string;
-  checksum_original: string;
-}
+  checksum_original: string | null;
+  hashOriginal?: string;
+};
 
 type MetadataProps = {
   otpExpired: boolean;
   filesSigned: number;
   signedFailed: number;
   objectReceived: number;
-}
+};
 
 type OutputProps = {
   metadata: MetadataProps;
   status: number;
   error?: string;
   idSolicitud?: number;
-}
+};
+
+type FileOutputProps = OutputProps & {
+  files: FileInProps[];
+};
+
+type HashOutputProps = OutputProps & {
+  hashes: FileInProps[];
+};
+
+type SignPayload = {
+  files?: FileProps[];
+  hashes?: FileProps[];
+};
 
 export class FirmaGob {
   private url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
@@ -111,6 +125,17 @@ export class FirmaGob {
   }
 
   /**
+   * Agrega un hash a la lista de archivos
+   * @param hash hash del archivo a firmar
+   */
+  addHash(hash: string) {
+    this.files.push({
+      "content-type": "application/json",
+      content: hash,
+    });
+  }
+
+  /**
    * Agrega un archivo PDF a la lista de archivos
    * @param content Archivo en base64
    * @param checksum SHA256 del archivo
@@ -148,7 +173,7 @@ export class FirmaGob {
    * @param otp Si la firma es de propósito general necesitas enviar el código OTP
    * @returns Respuesta con documentos firmados o errores
    */
-  async signFiles(otp?: string): Promise<FileOutputProps> {
+  private async sign(signPayload: SignPayload, otp?: string) {
     if (this.environment === Environment.TEST) {
       console.warn(
         "Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig"
@@ -159,6 +184,13 @@ export class FirmaGob {
       throw new Error(
         "Los certificados de propósito general requieren de un código OTP"
       );
+    }
+
+    if (
+      (!signPayload.files || signPayload.files?.length === 0) &&
+      (!signPayload.hashes || signPayload.hashes?.length === 0)
+    ) {
+      throw new Error("Necesitas agregar al menos un archivo o un hash");
     }
 
     const header = {
@@ -204,8 +236,8 @@ export class FirmaGob {
 
     const body = JSON.stringify({
       api_token_key: this.api_token_key,
-      files: this.files,
       token,
+      ...signPayload,
     });
 
     const response = await fetch(this.url, { method: "post", body, headers });
@@ -213,5 +245,13 @@ export class FirmaGob {
     const status = response.status;
 
     return { ...responseJson, status };
+  }
+
+  async signFiles(otp?: string): Promise<FileOutputProps> {
+    return this.sign({ files: this.files }, otp);
+  }
+
+  async signHashes(otp?: string): Promise<HashOutputProps> {
+    return this.sign({ hashes: this.files }, otp);
   }
 }
