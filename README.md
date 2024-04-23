@@ -24,6 +24,7 @@ Por defecto la librería inicia con los parámetros de desarrollo (certificado d
 
 ```js
 // tuarchivo.js
+// Ejemplo firma archivos PDF, firma gob recomienda firmar un hash
 
 const { FirmaGob, File } = new FirmaGob();
 
@@ -39,7 +40,7 @@ const local = file.fromLocal("pathToPdf");
 gob.addPDF(local.base64, local.checksum); // agrega pdf
 
 // firmar documentos y recibir respuesta
-const output = await gob.sign();
+const output = await gob.signFiles();
 
 // guarda archivos con la clase File
 output.files.forEach((item) => {
@@ -48,6 +49,31 @@ output.files.forEach((item) => {
 ```
 
 luego ya puedes ejecutar `node tuarchivo.js`
+
+## Firmar un hash
+
+```js
+// tuarchivo.js
+
+const { FirmaGob, File } = new FirmaGob();
+
+const gob = new FirmaGob();
+const file = new File();
+
+const hash = await file.fromRemoteToHash("linkToPdf"); // agrega hash
+gob.addHash(hash);
+
+// o también desde un archivo local
+
+const hash = file.fromLocalToHash("pathToPdf");
+gob.addHash(hash); // agrega hash
+
+// firmar documentos y recibir respuesta
+const output = await gob.signHashes();
+
+// agregar firma a archivo PDF
+const hashes = output.hashes; // array de hashes
+```
 
 # FirmaGob
 
@@ -107,6 +133,16 @@ Agrega un archivo PDF a la lista de archivos
 gob.addPDF(content: string, checksum: string, layout?: string)
 ```
 
+### addHash
+
+Agrega un hash a la lista de archivos
+
+- **hash** hash del archivo a firmar
+
+```ts
+gob.addHash(hash: string)
+```
+
 ### addXML
 
 Agrega un archivo PDF a la lista de archivos
@@ -130,16 +166,29 @@ Agrega multiples archivos a la lista de archivos a ser firmados
 gob.addFiles(files: FileProps[])
 ```
 
-### sign
+### signFiles
 
 Firma los archivos previamente establecidos
 
-- **otp** Si la firma es de propósito general necesitas enviar el código OTG
+- **otp** Si la firma es de propósito general necesitas enviar el código OTP
 
-- **Respuesta** con documentos firmados o errores
+- **Respuesta** con documentos firmados o errores, para este método siempre existirá una clave **files** con los archivos firmados
 
 ```ts
 gob.signFiles(otp?: string)
+
+```
+
+### signHashes
+
+Firma los hashes previamente establecidos con `addHash`
+
+- **otp** Si la firma es de propósito general necesitas enviar el código OTP
+
+- **Respuesta** con documentos firmados o errores, para este método siempre existirá una clave **hashes** con los certificados que deben ser agregados al archivo PDF
+
+```ts
+gob.signHashes(otp?: string)
 
 ```
 

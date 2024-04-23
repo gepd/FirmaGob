@@ -1,3 +1,10 @@
+## 1.4.0
+
+- 🪄 Agregados metodos: `addHash`, `signHashes`
+  Agregada lógica para firmar archivos por hashes db5b14b
+- 🚧 usar types en vez de interface 8be217c
+- 🚧 status solo puede ser "OK" o "error" 4c5c759
+
 ## 1.3.0
 
 - 🪄 Agregado `fromLocalToHash` y `fromRemoteToHash` para calcular el hash sin necesidad de devolver el archivo en base64 4470e6c
