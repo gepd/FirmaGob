@@ -101,6 +101,12 @@ var FirmaGob = (function () {
             layout: layout,
         });
     };
+    FirmaGob.prototype.addHash = function (hash) {
+        this.files.push({
+            "content-type": "application/json",
+            content: hash,
+        });
+    };
     FirmaGob.prototype.addXML = function (content, checksum, references, xmlObjects) {
         this.files.push({
             "content-type": "application/xml",
@@ -114,17 +120,22 @@ var FirmaGob = (function () {
     FirmaGob.prototype.addFiles = function (files) {
         this.files = files;
     };
-    FirmaGob.prototype.signFiles = function (otp) {
+    FirmaGob.prototype.sign = function (signPayload, otp) {
         return __awaiter(this, void 0, void 0, function () {
             var header, THIRTY_MINUTES, expiration, tzoffset, payload, header_str, header_enc, payload_str, payload_enc, unsigned_token, signature_str, signature_enc, token, headers, body, response, responseJson, status;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         if (this.environment === Environment.TEST) {
                             console.warn("Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig");
                         }
                         if (this.purpose === Purpose.ATENDIDO && !otp) {
                             throw new Error("Los certificados de propósito general requieren de un código OTP");
+                        }
+                        if ((!signPayload.files || ((_a = signPayload.files) === null || _a === void 0 ? void 0 : _a.length) === 0) &&
+                            (!signPayload.hashes || ((_b = signPayload.hashes) === null || _b === void 0 ? void 0 : _b.length) === 0)) {
+                            throw new Error("Necesitas agregar al menos un archivo o un hash");
                         }
                         header = {
                             alg: "HS256",
@@ -154,20 +165,30 @@ var FirmaGob = (function () {
                         if (this.purpose === Purpose.ATENDIDO) {
                             headers.OTP = otp;
                         }
-                        body = JSON.stringify({
-                            api_token_key: this.api_token_key,
-                            files: this.files,
-                            token: token,
-                        });
+                        body = JSON.stringify(__assign({ api_token_key: this.api_token_key, token: token }, signPayload));
                         return [4, (0, node_fetch_1.default)(this.url, { method: "post", body: body, headers: headers })];
                     case 1:
-                        response = _a.sent();
+                        response = _c.sent();
                         return [4, response.json()];
                     case 2:
-                        responseJson = _a.sent();
+                        responseJson = _c.sent();
                         status = response.status;
                         return [2, __assign(__assign({}, responseJson), { status: status })];
                 }
+            });
+        });
+    };
+    FirmaGob.prototype.signFiles = function (otp) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.sign({ files: this.files }, otp)];
+            });
+        });
+    };
+    FirmaGob.prototype.signHashes = function (otp) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.sign({ hashes: this.files }, otp)];
             });
         });
     };
