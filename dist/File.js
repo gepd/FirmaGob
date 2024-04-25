@@ -73,7 +73,7 @@ var File = (function () {
         });
     };
     File.prototype.bufferChecksum = function (buffer) {
-        return (0, crypto_1.createHash)("sha256").update(buffer).digest("hex");
+        return (0, crypto_1.createHash)("sha256").update(buffer).digest("base64");
     };
     File.prototype.bufferToBase64 = function (buffer) {
         return Buffer.from(buffer).toString("base64");

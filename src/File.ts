@@ -52,7 +52,7 @@ export class File {
    * @returns string con checksum
    */
   private bufferChecksum(buffer: Buffer) {
-    return createHash("sha256").update(buffer).digest("hex");
+    return createHash("sha256").update(buffer).digest("base64");
   }
 
   /**
