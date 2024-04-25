@@ -130,7 +130,7 @@ export class FirmaGob {
    */
   addHash(hash: string) {
     this.files.push({
-      "content-type": "application/json",
+      "content-type": "application/pdf",
       content: hash,
     });
   }

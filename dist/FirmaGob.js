@@ -103,7 +103,7 @@ var FirmaGob = (function () {
     };
     FirmaGob.prototype.addHash = function (hash) {
         this.files.push({
-            "content-type": "application/json",
+            "content-type": "application/pdf",
             content: hash,
         });
     };
