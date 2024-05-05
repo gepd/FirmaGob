@@ -65,6 +65,15 @@ export class File {
   }
 
   /**
+   * Obtiene los datos de un buffer y calcula su hash (checksum)
+   * @param buffer buffer del archivo
+   * @returns hash del archivo (checksum)
+   */
+  fromBufferToHash(buffer: Buffer) {
+    return this.bufferChecksum(buffer);
+  }
+
+  /**
    * Obtiene los datos de un archivo local y los convierte a un buffer
    * @param path ruta del archivo
    * @returns objeto buffer
