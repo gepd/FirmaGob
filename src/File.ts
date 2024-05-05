@@ -116,7 +116,7 @@ export class File {
    * @param path ruta del archivo
    * @returns objeto buffer
    */
-  private async fromRemoteToBuffer(url: string) {
+  async fromRemoteToBuffer(url: string) {
     if (!this.isURL(url)) {
       throw new Error("La URL indicada no es válida");
     }
