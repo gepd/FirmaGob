@@ -60,7 +60,7 @@ export class File {
    * @param buffer buffer de archivo
    * @returns string de archivo en base64
    */
-  private bufferToBase64(buffer: Buffer) {
+  bufferToBase64(buffer: Buffer) {
     return Buffer.from(buffer).toString("base64");
   }
 
