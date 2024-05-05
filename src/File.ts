@@ -78,7 +78,7 @@ export class File {
    * @param path ruta del archivo
    * @returns objeto buffer
    */
-  private fromLocalToBuffer(path: string) {
+  fromLocalToBuffer(path: string) {
     if (!fileSystem.statSync(path).isFile() && !this.isPDF(path)) {
       throw new Error("La ruta indicada no es un archivo válido");
     }
