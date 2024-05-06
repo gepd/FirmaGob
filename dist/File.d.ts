@@ -5,14 +5,15 @@ export declare class File {
     private readFile;
     private readURL;
     private bufferChecksum;
-    private bufferToBase64;
-    private fromLocalToBuffer;
+    bufferToBase64(buffer: Buffer): string;
+    fromBufferToHash(buffer: Buffer): string;
+    fromLocalToBuffer(path: string): Buffer;
     fromLocal(path: string): {
         base64: string;
         checksum: string;
     };
     fromLocalToHash(path: string): string;
-    private fromRemoteToBuffer;
+    fromRemoteToBuffer(url: string): Promise<Buffer>;
     fromRemote(url: string): Promise<{
         base64: string;
         checksum: string;

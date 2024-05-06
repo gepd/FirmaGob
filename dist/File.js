@@ -78,6 +78,9 @@ var File = (function () {
     File.prototype.bufferToBase64 = function (buffer) {
         return Buffer.from(buffer).toString("base64");
     };
+    File.prototype.fromBufferToHash = function (buffer) {
+        return this.bufferChecksum(buffer);
+    };
     File.prototype.fromLocalToBuffer = function (path) {
         if (!fs_1.default.statSync(path).isFile() && !this.isPDF(path)) {
             throw new Error("La ruta indicada no es un archivo válido");

@@ -31,10 +31,10 @@ type OutputProps = {
     error?: string;
     idSolicitud?: number;
 };
-type FileOutputProps = OutputProps & {
+export type FileOutputProps = OutputProps & {
     files: FileInProps[];
 };
-type HashOutputProps = OutputProps & {
+export type HashOutputProps = OutputProps & {
     hashes: FileInProps[];
 };
 export declare class FirmaGob {
