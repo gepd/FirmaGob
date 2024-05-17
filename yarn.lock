@@ -200,10 +200,6 @@
     "@pnpm/network.ca-file" "^1.0.1"
     config-chain "^1.1.11"
 
-"@signpdf/signpdf@https://github.com/gepd/node-signpdf":
-  version "1.0.1"
-  resolved "https://github.com/gepd/node-signpdf#da04a580038e61c2a6b67b06d9f79fca36bdff89"
-
 "@sindresorhus/is@^5.2.0":
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-5.6.0.tgz#41dd6093d34652cddb5d5bdeee04eafc33826668"
@@ -1939,6 +1935,10 @@ node-fetch@3.3.2:
     data-uri-to-buffer "^4.0.0"
     fetch-blob "^3.1.4"
     formdata-polyfill "^4.0.10"
+
+"node-signpdf@https://github.com/gepd/node-signpdf":
+  version "3.0.0"
+  resolved "https://github.com/gepd/node-signpdf#e556bab102b7ef41ce0f9000be60a72b10f32619"
 
 normalize-url@^8.0.0:
   version "8.0.1"

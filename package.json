@@ -11,8 +11,8 @@
   "author": "Guillermo Parraguez",
   "license": "MIT",
   "dependencies": {
-    "@signpdf/signpdf": "https://github.com/gepd/node-signpdf",
     "node-fetch": "2.6.7",
+    "node-signpdf": "https://github.com/gepd/node-signpdf",
     "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
