@@ -1,19 +1,10 @@
-import signer from "@signpdf/signpdf";
-import {
-  PDFArray,
-  PDFDict,
-  PDFDocument,
-  PDFHexString,
-  PDFName,
-  PDFNumber,
-  PDFOperator,
-  PDFPage,
-  PDFString,
-} from "pdf-lib";
+import { SignPdf } from "node-signpdf";
+import { plainAddPlaceholder } from "node-signpdf/dist/helpers/index.js";
+import { PDFDocument, PDFOperator, PDFPage } from "pdf-lib";
 import { HashOutputProps } from "./FirmaGob";
-import PDFArrayCustom from "./PdfArrayCustom";
 
 export class PDF {
+  private pdfBuffer: Buffer | null = null;
   private pdf: PDFDocument | null = null;
   private xObject: { [key: string]: any } = {};
 
@@ -26,11 +17,8 @@ export class PDF {
   constructor() {}
 
   async loadFromBuffer(pdfBuffer: Buffer) {
-    this.pdf = await PDFDocument.load(pdfBuffer);
-  }
-
-  loadFromPdfDocument(pdfDocument: PDFDocument) {
-    this.pdf = pdfDocument;
+    this.pdfBuffer = pdfBuffer;
+    // this.pdf = await PDFDocument.load(pdfBuffer);
   }
 
   getPages() {
@@ -42,8 +30,8 @@ export class PDF {
   }
 
   async addImage(name: string, data: string) {
-    const embedImage = await this.pdf.embedPng(data);
-    this.xObject[name] = embedImage.ref;
+    // const embedImage = await this.pdf.embedPng(data);
+    // this.xObject[name] = embedImage.ref;
   }
 
   async getPdfBuffer() {
@@ -55,94 +43,31 @@ export class PDF {
     signatureId: string,
     reason: string,
     operators: PDFOperator[],
-    page: PDFPage
+    page?: PDFPage
   ) {
-    if (!this.pdf) {
+    if (!this.pdf && !this.pdfBuffer) {
       throw new Error("NO_PDF");
     }
 
     const signatureDate = new Date();
     const SIGNATURE_LENGTH = 15000;
 
-    const ByteRange = PDFArrayCustom.withContext(this.pdf.context);
-    ByteRange.push(PDFNumber.of(0));
-    ByteRange.push(PDFName.of(signer.DEFAULT_BYTE_RANGE_PLACEHOLDER));
-    ByteRange.push(PDFName.of(signer.DEFAULT_BYTE_RANGE_PLACEHOLDER));
-    ByteRange.push(PDFName.of(signer.DEFAULT_BYTE_RANGE_PLACEHOLDER));
+    let pdfBuffer = this.pdfBuffer;
+    // const imageBuffer = fs.readFileSync("./signature.png");
 
-    const signatureDict = this.pdf.context.obj({
-      Type: "Sig",
-      Filter: "Adobe.PPKLite",
-      SubFilter: "adbe.pkcs7.detached",
-      ByteRange,
-      Contents: PDFHexString.of("A".repeat(SIGNATURE_LENGTH)),
-      Reason: PDFString.of(reason),
-      M: PDFString.fromDate(signatureDate),
+    pdfBuffer = plainAddPlaceholder({
+      pdfBuffer: pdfBuffer,
+      name: signatureId,
+      location: "",
+      contactInfo: "",
+      reason,
+      signatureLength: SIGNATURE_LENGTH,
+      // imageBuffer: imageBuffer,
     });
 
-    const signatureDictRef = this.pdf.context.register(signatureDict);
-
-    const widgetDict = this.pdf.context.obj({
-      Type: "Annot",
-      Subtype: "Widget",
-      FT: "Sig",
-      Rect: [100, 0, 300, 60],
-      V: signatureDictRef,
-      T: PDFString.of(signatureId),
-      F: 4,
-      P: page.ref,
-    });
-
-    const widgetDictRef = this.pdf.context.register(widgetDict);
-
-    // Add our signature widget to the sent page
-    const annots = page.node.Annots() || this.pdf.context.obj([]);
-    annots.push(widgetDictRef);
-    page.node.set(PDFName.of("Annots"), annots);
-
-    // Manage AcroForm fields
-    const acroForm = this.pdf.catalog.lookupMaybe(
-      PDFName.of("AcroForm"),
-      PDFDict
-    );
-    if (acroForm) {
-      const fields = acroForm.lookup(PDFName.of("Fields"), PDFArray);
-      fields.push(widgetDictRef);
-    } else {
-      this.pdf.catalog.set(
-        PDFName.of("AcroForm"),
-        this.pdf.context.obj({
-          SigFlags: 3,
-          Fields: [widgetDictRef],
-        })
-      );
-    }
-
-    const form = this.pdf.getForm();
-    const sig = form.getSignature(signatureId);
-
-    sig.acroField.getWidgets().forEach((widget) => {
-      const { context } = widget.dict;
-      const { width, height } = widget.getRectangle();
-
-      const stream = context.formXObject(operators, {
-        Resources: { XObject: this.xObject },
-        BBox: context.obj([0, 0, width, height]),
-        Matrix: context.obj([1, 0, 0, 1, 0, 0]),
-      });
-      const streamRef = context.register(stream);
-
-      widget.setNormalAppearance(streamRef);
-    });
-
-    const modifiedPdfBytes = await this.pdf.save({ useObjectStreams: false });
-    const modifiedPdfBuffer = Buffer.from(modifiedPdfBytes);
-    const preSigned = new signer.SignPdf();
-
-    const { pdf, placeholderLength, byteRange1 } = preSigned.sign(
-      modifiedPdfBuffer,
-      true
-    ) as any;
+    // Update Modified PDF
+    const { pdf, placeholderLength, byteRange1 } =
+      SignPdf.preparePdfForSigning(pdfBuffer);
 
     this.preSigned = {
       pdf,
@@ -152,7 +77,7 @@ export class PDF {
   }
 
   async sign(apiSignatures: HashOutputProps) {
-    if (!this.pdf) {
+    if (!this.pdf && !this.pdfBuffer) {
       throw new Error("NO_PDF");
     }
 
@@ -166,11 +91,10 @@ export class PDF {
       }
       const byteBuffer = bytes.buffer;
 
-      const signedObj = new signer.SignPdf();
+      const signedObj = new SignPdf();
 
       const signedPdfBuffer = signedObj.sign(
         this.preSigned.pdf,
-        false,
         byteBuffer,
         this.preSigned.placeholderLength,
         this.preSigned.byteRange
