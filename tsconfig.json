@@ -8,7 +8,8 @@
     "removeComments": true,
     "outDir": "dist",
     "baseUrl": ".",
-    "declaration": true
+    "declaration": true,
+    "allowJs": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

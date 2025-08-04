@@ -192,6 +192,203 @@ gob.signHashes(otp?: string)
 
 ```
 
+## PDF
+
+La clase `PDF` te permite preparar e inyectar firmas digitales en tus documentos de forma sencilla.
+Funciona como complemento de `FirmaGob`, recibiendo la firma en `base64` generada por el método de firma con hash y añadiéndola incrementalmente al PDF para mantener válida la primera o las firmas sucesivas.
+
+### Importación
+
+```ts
+import { PDF } from "firma-gob";
+```
+
+### Tipos y configuración inicial
+
+#### `SignerInfo`
+
+Define los parámetros visuales y de posición del widget de firma:
+
+```ts
+export type SignerInfo = {
+  reason: string; // Motivo que aparecerá en la firma
+  width: number; // Ancho del área de firma (en pts)
+  height: number; // Alto del área de firma (en pts)
+  x: number; // Coordenada X (desde la esquina inferior izquierda)
+  y: number; // Coordenada Y
+};
+```
+
+### Métodos principales
+
+Carga un PDF existente desde un buffer en memoria.
+
+```ts
+await pdf.loadFromBuffer(pdfBytes);
+```
+
+#### `setSigner(signer: SignerInfo): void`
+
+Define la información del firmante (posición, tamaño y motivo).
+
+```ts
+pdf.setSigner({
+  reason: "Revisión Contable",
+  width: 230,
+  height: 80,
+  x: 50,
+  y: 650,
+});
+```
+
+#### `addImage(name: string, imageBytes: Uint8Array): Promise<void>`
+
+Inyecta una imagen al PDF y la registra.
+
+```ts
+await pdf.addImage("Git", signatureImagen);
+```
+
+#### `enableOpacity(): void`
+
+Habilita el uso de estados gráficos (`ExtGState`) para soportar opacidad en los operadores.
+
+```ts
+pdf.enableOpacity();
+```
+
+#### `setOperators(operatorFn: (regular: FontInfo, bold: FontInfo) => PDFOperator[]): void`
+
+Define la secuencia de operadores gráficos que formarán el contenido visual del widget de firma.
+
+- Recibe dos objetos `FontInfo` el primero con Helvetica Regular y el Segundo con Helvetica Bold. El objeto contiene su nombre y ` PDFFont`para ser usado con `drawTextSegments`
+- Debe devolver un array de `PDFOperator` (puede usar helpers como `pushGraphicsState()`, `drawRectangle()`, `drawImage()`, `drawTextSegments()`, `popGraphicsState()`, etc.).
+
+```ts
+pdf.setOperators((regular, bold) => [
+  pushGraphicsState(),
+  setGraphicsState(PDFName.of("Opacity")),
+  ...drawRectangle({
+    x: 0,
+    y: 0,
+    width: signer.width,
+    height: signer.height,
+    color: rgb(0.95, 0.95, 0.95),
+    borderWidth: 1,
+    borderColor: rgb(0.8, 0.8, 0.8),
+  }),
+  popGraphicsState(),
+
+  ...drawImage("Git", {
+    x: 10,
+    y: (signer.height - 40) / 2,
+    width: 40,
+    height: 40,
+    rotate: degrees(0),
+    xSkew: degrees(0),
+    ySkew: degrees(0),
+  }),
+
+  setCharacterSpacing(-0.8),
+
+  ...drawTextSegments(
+    [
+      { segments: [{ texto: "Firmado por", fontName: regular.name }] },
+      {
+        segments: [
+          {
+            texto: "Guillermo Parraguez",
+            fontName: bold.name,
+            font: bold.font,
+          },
+        ],
+      },
+      { segments: [{ texto: "Coordinador de Transformación Digital" }] },
+      {
+        segments: [
+          { texto: "Fecha", fontName: bold.name, font: bold.font },
+          { texto: new Date().toISOString() },
+        ],
+      },
+      { segments: [{ texto: "Ilustre Municipalidad de Diego de Almagro" }] },
+    ],
+    {
+      x: 65,
+      y: 55,
+      fontName: regular.name,
+      font: regular.font,
+      size: 7,
+      color: rgb(0, 0, 0),
+    }
+  ),
+]);
+```
+
+Nota: `drawTextSegments` es una función que permite generar texto con diferentes fuentes (regular, Bold) en una misma linea, tal como el ejemplo anterior
+
+#### `getPreparedPDF(): Promise<Uint8Array>`
+
+Devuelve el buffer del PDF **preparado** para firmar (contiene AcroForm, campos, widgets y aparición visual). Se usa para calcular el hash antes de la firma.
+
+```ts
+const prepared = await pdf.getPreparedPDF();
+```
+
+#### `sign(signedHashes: SignatureOutput[]): Uint8Array`
+
+Aplica la firma PKCS#7 (base64) retornada por la API y devuelve el PDF firmado final.
+
+```ts
+const signedPDF = pdf.sign(outputFromFirmaGob);
+```
+
+### Ejemplo completo de uso
+
+```ts
+import { FirmaGob, File, PDF } from "firma-gob";
+
+const signer: SignerInfo = {
+  reason: "Revisión Contable",
+  width: 230,
+  height: 80,
+  x: 50,
+  y: 650,
+};
+
+const main = async () => {
+  const gob = new FirmaGob();
+  const pdf = new PDF();
+  const file = new File();
+
+  // Leer archivos
+  const signatureImagen = file.fromLocalToBytes("./signature.png");
+  const pdfBuffer = file.fromLocalToBytes("./Testing PDF.pdf");
+
+  // Preparar PDF
+  await pdf.loadFromBuffer(pdfBuffer);
+  pdf.setSigner(signer);
+  await pdf.addImage("Git", signatureImagen);
+  pdf.enableOpacity();
+  pdf.setOperators((regular, bold) => [
+    /* ...operadores como se mostró arriba... */
+  ]);
+
+  // Obtener PDF preparado y firmarlo
+  const prepared = await pdf.getPreparedPDF();
+  const hash = file.fromBufferToHash(prepared);
+  gob.addHash(hash);
+
+  const signedOut = await gob.signHashes();
+  const signedPDF = pdf.sign(signedOut);
+
+  // Guardar resultado
+  file.base64ToDisk("./documento-final-firmado.pdf", signedPDF);
+  console.log("PDF final guardado en ./documento-final-firmado.pdf");
+};
+
+main();
+```
+
 # File
 
 La clase `File` te ayudará a manipular tus archivos para ser usados con `FirmaGob`

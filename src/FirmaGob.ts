@@ -29,7 +29,6 @@ type FileInProps = {
   checksum_original: string | null;
   hashOriginal?: string;
 };
-
 type MetadataProps = {
   otpExpired: boolean;
   filesSigned: number;
@@ -44,11 +43,11 @@ type OutputProps = {
   idSolicitud?: number;
 };
 
-type FileOutputProps = OutputProps & {
+export type FileOutputProps = OutputProps & {
   files: FileInProps[];
 };
 
-type HashOutputProps = OutputProps & {
+export type HashOutputProps = OutputProps & {
   hashes: FileInProps[];
 };
 

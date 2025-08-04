@@ -1,3 +1,4 @@
-import { FirmaGob, Purpose } from "./FirmaGob";
+import { FirmaGob, Purpose, FileOutputProps, HashOutputProps } from "./FirmaGob";
 import { File } from "./File";
-export { File, FirmaGob, Purpose };
+import { PDF } from "./PDF";
+export { PDF, File, FirmaGob, Purpose, FileOutputProps, HashOutputProps };
