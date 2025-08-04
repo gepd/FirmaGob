@@ -29,7 +29,7 @@ export class File {
    * @param path Ruta del archivo a leer
    * @returns Buffer
    */
-  private readFile(path: string) {
+  readFile(path: string) {
     if (fileSystem.statSync(path).isFile()) {
       return fileSystem.readFileSync(resolve(path));
     }
@@ -41,7 +41,7 @@ export class File {
    * @param url ruta a leer
    * @returns Buffer
    */
-  private async readURL(url: string) {
+  async readURL(url: string) {
     const response = await fetch(url);
     return response.buffer();
   }
