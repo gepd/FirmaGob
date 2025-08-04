@@ -12,13 +12,14 @@
   "license": "MIT",
   "dependencies": {
     "node-fetch": "2.6.7",
-    "node-signpdf": "https://github.com/gepd/node-signpdf",
-    "pdf-lib": "^1.17.1"
+    "node-signpdf": "git+https://github.com/gepd/node-signpdf#develop",
+    "pdf-lib-incremental-save": "^1.17.4"
   },
   "devDependencies": {
+    "@types/node": "^24.1.0",
     "@types/node-fetch": "^2.6.2",
     "dotenv-cli": "^7.4.1",
-    "release-it": "^17.2.0"
+    "release-it": "^19.0.3"
   },
   "keywords": [
     "firma",
