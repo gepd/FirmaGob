@@ -9,7 +9,7 @@ export class File {
    * @param url link a vertificar
    * @returns True si es correcto, False si no
    */
-  private isURL(url: string) {
+  private static isURL(url: string) {
     return /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
       url
     );
@@ -20,7 +20,7 @@ export class File {
    * @param path Archivo PDF
    * @returns True si es correcto, False si no
    */
-  private isPDF(path: string) {
+  private static isPDF(path: string) {
     return /(\.(pdf))/gi.test(path);
   }
 
@@ -29,7 +29,7 @@ export class File {
    * @param path Ruta del archivo a leer
    * @returns Buffer
    */
-  readFile(path: string) {
+  static readFile(path: string) {
     if (fileSystem.statSync(path).isFile()) {
       return fileSystem.readFileSync(resolve(path));
     }
@@ -41,7 +41,7 @@ export class File {
    * @param url ruta a leer
    * @returns Buffer
    */
-  async readURL(url: string) {
+  static async readURL(url: string) {
     const response = await fetch(url);
     return response.buffer();
   }
@@ -51,7 +51,7 @@ export class File {
    * @param buffer buffer de archivo
    * @returns string con checksum
    */
-  private bufferChecksum(buffer: Buffer) {
+  private static bufferChecksum(buffer: Buffer) {
     return createHash("sha256").update(buffer).digest("base64");
   }
 
@@ -60,7 +60,7 @@ export class File {
    * @param buffer buffer de archivo
    * @returns string de archivo en base64
    */
-  bufferToBase64(buffer: Buffer) {
+  static bufferToBase64(buffer: Buffer) {
     return Buffer.from(buffer).toString("base64");
   }
 
@@ -69,8 +69,8 @@ export class File {
    * @param buffer buffer del archivo
    * @returns hash del archivo (checksum)
    */
-  fromBufferToHash(buffer: Buffer) {
-    return this.bufferChecksum(buffer);
+  static fromBufferToHash(buffer: Buffer) {
+    return File.bufferChecksum(buffer);
   }
 
   /**
@@ -78,12 +78,12 @@ export class File {
    * @param path ruta del archivo
    * @returns objeto buffer
    */
-  fromLocalToBuffer(path: string) {
-    if (!fileSystem.statSync(path).isFile() && !this.isPDF(path)) {
+  static fromLocalToBuffer(path: string) {
+    if (!fileSystem.statSync(path).isFile() && !File.isPDF(path)) {
       throw new Error("La ruta indicada no es un archivo válido");
     }
 
-    return this.readFile(path);
+    return File.readFile(path);
   }
 
   /**
@@ -92,10 +92,10 @@ export class File {
    * @param path ruta del archivo
    * @returns objeto con archivo en base64 y checksum
    */
-  fromLocal(path: string) {
-    const bufferFile = this.fromLocalToBuffer(path);
-    const base64 = this.bufferToBase64(bufferFile);
-    const checksum = this.bufferChecksum(bufferFile);
+  static fromLocal(path: string) {
+    const bufferFile = File.fromLocalToBuffer(path);
+    const base64 = File.bufferToBase64(bufferFile);
+    const checksum = File.bufferChecksum(bufferFile);
 
     return { base64, checksum };
   }
@@ -105,9 +105,9 @@ export class File {
    * @param path ruta del archivo
    * @returns hash del archivo (checksum)
    */
-  fromLocalToHash(path: string) {
-    const bufferFile = this.fromLocalToBuffer(path);
-    return this.bufferChecksum(bufferFile);
+  static fromLocalToHash(path: string) {
+    const bufferFile = File.fromLocalToBuffer(path);
+    return File.bufferChecksum(bufferFile);
   }
 
   /**
@@ -116,12 +116,12 @@ export class File {
    * @param path ruta del archivo
    * @returns objeto buffer
    */
-  async fromRemoteToBuffer(url: string) {
-    if (!this.isURL(url)) {
+  static async fromRemoteToBuffer(url: string) {
+    if (!File.isURL(url)) {
       throw new Error("La URL indicada no es válida");
     }
 
-    return this.readURL(url);
+    return File.readURL(url);
   }
 
   /**
@@ -129,15 +129,15 @@ export class File {
    * @param url dirección del archivo pdf
    * @returns objeto con archivo en base64 y checksum
    */
-  async fromRemote(url: string) {
-    if (!this.isURL(url)) {
+  static async fromRemote(url: string) {
+    if (!File.isURL(url)) {
       throw new Error("La URL indicada no es válida");
     }
 
-    const bufferFile = await this.fromRemoteToBuffer(url);
+    const bufferFile = await File.fromRemoteToBuffer(url);
 
-    const base64 = this.bufferToBase64(bufferFile);
-    const checksum = this.bufferChecksum(bufferFile);
+    const base64 = File.bufferToBase64(bufferFile);
+    const checksum = File.bufferChecksum(bufferFile);
 
     return { base64, checksum };
   }
@@ -147,14 +147,14 @@ export class File {
    * @param url dirección del archivo pdf
    * @returns hash del archivo (checksum)
    */
-  async fromRemoteToHash(url: string) {
-    if (!this.isURL(url)) {
+  static async fromRemoteToHash(url: string) {
+    if (!File.isURL(url)) {
       throw new Error("La URL indicada no es válida");
     }
 
-    const bufferFile = await this.fromRemoteToBuffer(url);
+    const bufferFile = await File.fromRemoteToBuffer(url);
 
-    return this.bufferChecksum(bufferFile);
+    return File.bufferChecksum(bufferFile);
   }
 
   /**
@@ -162,7 +162,7 @@ export class File {
    * @param base64 archivo en base64
    * @returns buffer de archivo
    */
-  base64ToBuffer(base64: string) {
+  static base64ToBuffer(base64: string) {
     return Buffer.from(base64, "base64");
   }
 
@@ -171,7 +171,7 @@ export class File {
    * @param filename nombre del archivo a guardar
    * @param buffer buffer a guardar
    */
-  bufferToDisk(filename: string, buffer: Buffer) {
+  static bufferToDisk(filename: string, buffer: Buffer) {
     fileSystem.writeFileSync(filename, buffer);
   }
 
@@ -180,8 +180,8 @@ export class File {
    * @param filename nombre del archivo
    * @param base64 archivi en base64
    */
-  base64ToDisk(filename: string, base64: string) {
-    const buffer = this.base64ToBuffer(base64);
-    this.bufferToDisk(filename, buffer);
+  static base64ToDisk(filename: string, base64: string) {
+    const buffer = File.base64ToBuffer(base64);
+    File.bufferToDisk(filename, buffer);
   }
 }
