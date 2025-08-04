@@ -197,15 +197,11 @@ gob.signHashes(otp?: string)
 La clase `PDF` te permite preparar e inyectar firmas digitales en tus documentos de forma sencilla.
 Funciona como complemento de `FirmaGob`, recibiendo la firma en `base64` generada por el método de firma con hash y añadiéndola incrementalmente al PDF para mantener válida la primera o las firmas sucesivas.
 
----
-
 ### Importación
 
 ```ts
 import { PDF } from "firma-gob";
 ```
-
----
 
 ### Tipos y configuración inicial
 
@@ -223,8 +219,6 @@ export type SignerInfo = {
 };
 ```
 
----
-
 ### Métodos principales
 
 Carga un PDF existente desde un buffer en memoria.
@@ -232,8 +226,6 @@ Carga un PDF existente desde un buffer en memoria.
 ```ts
 await pdf.loadFromBuffer(pdfBytes);
 ```
-
----
 
 #### `setSigner(signer: SignerInfo): void`
 
@@ -249,8 +241,6 @@ pdf.setSigner({
 });
 ```
 
----
-
 #### `addImage(name: string, imageBytes: Uint8Array): Promise<void>`
 
 Inyecta una imagen al PDF y la registra.
@@ -259,8 +249,6 @@ Inyecta una imagen al PDF y la registra.
 await pdf.addImage("Git", signatureImagen);
 ```
 
----
-
 #### `enableOpacity(): void`
 
 Habilita el uso de estados gráficos (`ExtGState`) para soportar opacidad en los operadores.
@@ -268,8 +256,6 @@ Habilita el uso de estados gráficos (`ExtGState`) para soportar opacidad en los
 ```ts
 pdf.enableOpacity();
 ```
-
----
 
 #### `setOperators(operatorFn: (regular: FontInfo, bold: FontInfo) => PDFOperator[]): void`
 
@@ -338,8 +324,6 @@ pdf.setOperators((regular, bold) => [
 ]);
 ```
 
----
-
 Nota: `drawTextSegments` es una función que permite generar texto con diferentes fuentes (regular, Bold) en una misma linea, tal como el ejemplo anterior
 
 #### `getPreparedPDF(): Promise<Uint8Array>`
@@ -350,8 +334,6 @@ Devuelve el buffer del PDF **preparado** para firmar (contiene AcroForm, campos,
 const prepared = await pdf.getPreparedPDF();
 ```
 
----
-
 #### `sign(signedHashes: SignatureOutput[]): Uint8Array`
 
 Aplica la firma PKCS#7 (base64) retornada por la API y devuelve el PDF firmado final.
@@ -359,8 +341,6 @@ Aplica la firma PKCS#7 (base64) retornada por la API y devuelve el PDF firmado f
 ```ts
 const signedPDF = pdf.sign(outputFromFirmaGob);
 ```
-
----
 
 ### Ejemplo completo de uso
 
