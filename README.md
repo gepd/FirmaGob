@@ -17,7 +17,11 @@ Importa la librería en tu código
 ## FirmaGob
 
 ```js
-const { FirmaGob, File } = require("firma-gob");
+const { FirmaGob, File, PDF } = require("firma-gob");
+
+// o
+
+import { FirmaGob, File, PDF } from "firma-gob";
 ```
 
 Por defecto la librería inicia con los parámetros de desarrollo (certificado desatendido), por lo que puedes comenzar a usarla para pruebas directamente
