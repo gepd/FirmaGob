@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -47,19 +47,19 @@ var path_1 = require("path");
 var File = (function () {
     function File() {
     }
-    File.prototype.isURL = function (url) {
+    File.isURL = function (url) {
         return /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(url);
     };
-    File.prototype.isPDF = function (path) {
+    File.isPDF = function (path) {
         return /(\.(pdf))/gi.test(path);
     };
-    File.prototype.readFile = function (path) {
+    File.readFile = function (path) {
         if (fs_1.default.statSync(path).isFile()) {
             return fs_1.default.readFileSync((0, path_1.resolve)(path));
         }
         return null;
     };
-    File.prototype.readURL = function (url) {
+    File.readURL = function (url) {
         return __awaiter(this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {
@@ -72,86 +72,86 @@ var File = (function () {
             });
         });
     };
-    File.prototype.bufferChecksum = function (buffer) {
+    File.bufferChecksum = function (buffer) {
         return (0, crypto_1.createHash)("sha256").update(buffer).digest("base64");
     };
-    File.prototype.bufferToBase64 = function (buffer) {
+    File.bufferToBase64 = function (buffer) {
         return Buffer.from(buffer).toString("base64");
     };
-    File.prototype.fromBufferToHash = function (buffer) {
-        return this.bufferChecksum(buffer);
+    File.fromBufferToHash = function (buffer) {
+        return File.bufferChecksum(buffer);
     };
-    File.prototype.fromLocalToBuffer = function (path) {
-        if (!fs_1.default.statSync(path).isFile() && !this.isPDF(path)) {
+    File.fromLocalToBuffer = function (path) {
+        if (!fs_1.default.statSync(path).isFile() && !File.isPDF(path)) {
             throw new Error("La ruta indicada no es un archivo válido");
         }
-        return this.readFile(path);
+        return File.readFile(path);
     };
-    File.prototype.fromLocal = function (path) {
-        var bufferFile = this.fromLocalToBuffer(path);
-        var base64 = this.bufferToBase64(bufferFile);
-        var checksum = this.bufferChecksum(bufferFile);
+    File.fromLocal = function (path) {
+        var bufferFile = File.fromLocalToBuffer(path);
+        var base64 = File.bufferToBase64(bufferFile);
+        var checksum = File.bufferChecksum(bufferFile);
         return { base64: base64, checksum: checksum };
     };
-    File.prototype.fromLocalToHash = function (path) {
-        var bufferFile = this.fromLocalToBuffer(path);
-        return this.bufferChecksum(bufferFile);
+    File.fromLocalToHash = function (path) {
+        var bufferFile = File.fromLocalToBuffer(path);
+        return File.bufferChecksum(bufferFile);
     };
-    File.prototype.fromRemoteToBuffer = function (url) {
+    File.fromRemoteToBuffer = function (url) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (!this.isURL(url)) {
+                if (!File.isURL(url)) {
                     throw new Error("La URL indicada no es válida");
                 }
-                return [2, this.readURL(url)];
+                return [2, File.readURL(url)];
             });
         });
     };
-    File.prototype.fromRemote = function (url) {
+    File.fromRemote = function (url) {
         return __awaiter(this, void 0, void 0, function () {
             var bufferFile, base64, checksum;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.isURL(url)) {
+                        if (!File.isURL(url)) {
                             throw new Error("La URL indicada no es válida");
                         }
-                        return [4, this.fromRemoteToBuffer(url)];
+                        return [4, File.fromRemoteToBuffer(url)];
                     case 1:
                         bufferFile = _a.sent();
-                        base64 = this.bufferToBase64(bufferFile);
-                        checksum = this.bufferChecksum(bufferFile);
+                        base64 = File.bufferToBase64(bufferFile);
+                        checksum = File.bufferChecksum(bufferFile);
                         return [2, { base64: base64, checksum: checksum }];
                 }
             });
         });
     };
-    File.prototype.fromRemoteToHash = function (url) {
+    File.fromRemoteToHash = function (url) {
         return __awaiter(this, void 0, void 0, function () {
             var bufferFile;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this.isURL(url)) {
+                        if (!File.isURL(url)) {
                             throw new Error("La URL indicada no es válida");
                         }
-                        return [4, this.fromRemoteToBuffer(url)];
+                        return [4, File.fromRemoteToBuffer(url)];
                     case 1:
                         bufferFile = _a.sent();
-                        return [2, this.bufferChecksum(bufferFile)];
+                        return [2, File.bufferChecksum(bufferFile)];
                 }
             });
         });
     };
-    File.prototype.base64ToBuffer = function (base64) {
+    File.base64ToBuffer = function (base64) {
         return Buffer.from(base64, "base64");
     };
-    File.prototype.bufferToDisk = function (filename, buffer) {
+    File.bufferToDisk = function (filename, buffer) {
         fs_1.default.writeFileSync(filename, buffer);
     };
-    File.prototype.base64ToDisk = function (filename, base64) {
-        var buffer = this.base64ToBuffer(base64);
-        this.bufferToDisk(filename, buffer);
+    File.base64ToDisk = function (filename, base64) {
+        var buffer = File.base64ToBuffer(base64);
+        File.bufferToDisk(filename, buffer);
     };
     return File;
 }());

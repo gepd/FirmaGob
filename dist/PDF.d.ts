@@ -1,17 +1,36 @@
-/// <reference types="node" />
-import { PDFOperator, PDFPage } from "pdf-lib";
+import { PDFFont, PDFName, PDFOperator } from "pdf-lib-incremental-save";
 import { HashOutputProps } from "./FirmaGob";
+export type SignerInfo = {
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    reason: string;
+};
+type FontReference = {
+    name: PDFName;
+    font: PDFFont;
+};
 export declare class PDF {
-    private pdfBuffer;
     private pdf;
-    private xObject;
-    private preSigned;
+    private pdfBuffer;
+    private preparedPdf;
+    private operators;
+    private images;
+    private pageIndex;
+    private opacity;
+    private signer;
     constructor();
     loadFromBuffer(pdfBuffer: Buffer): Promise<void>;
-    getPages(): PDFPage[];
-    getUpdatedPDF(): Buffer;
-    addImage(name: string, data: string): Promise<void>;
-    getPdfBuffer(): Promise<Buffer>;
-    updateDictionary(signatureId: string, reason: string, operators: PDFOperator[], page?: PDFPage): Promise<void>;
-    sign(apiSignatures: HashOutputProps): Promise<Buffer>;
+    setPage(pageIndex: number): void;
+    getPages(): import("pdf-lib-incremental-save").PDFPage[];
+    setSigner(signer: SignerInfo): void;
+    addImage(name: string, data: Buffer): Promise<void>;
+    setOperators(operator: (regular: FontReference, bold: FontReference) => PDFOperator[]): void;
+    getPreparedPDF(): Promise<Buffer<ArrayBufferLike>>;
+    enableOpacity(): void;
+    getPdfBuffer(): Promise<Buffer<ArrayBuffer>>;
+    updateDictionary(): Promise<void>;
+    sign(apiSignatures: HashOutputProps): Promise<Buffer<ArrayBufferLike>>;
 }
+export {};

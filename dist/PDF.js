@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -32,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -58,19 +35,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PDF = void 0;
-var pdf_lib_1 = require("pdf-lib");
-var fs_1 = __importDefault(require("fs"));
-var signpdf_1 = __importStar(require("@signpdf/signpdf"));
+var node_signpdf_1 = require("node-signpdf");
+var pdf_lib_incremental_save_1 = require("pdf-lib-incremental-save");
+var SIGNATURE_LENGTH = 15000;
+var DEFAULT_BYTE_RANGE_PLACEHOLDER = "**********";
 var PDF = (function () {
     function PDF() {
-        this.pdfBuffer = null;
         this.pdf = null;
-        this.xObject = {};
+        this.pdfBuffer = null;
+        this.images = {};
+        this.opacity = false;
     }
     PDF.prototype.loadFromBuffer = function (pdfBuffer) {
         return __awaiter(this, void 0, void 0, function () {
@@ -80,7 +56,7 @@ var PDF = (function () {
                     case 0:
                         this.pdfBuffer = pdfBuffer;
                         _a = this;
-                        return [4, pdf_lib_1.PDFDocument.load(pdfBuffer)];
+                        return [4, pdf_lib_incremental_save_1.PDFDocument.load(pdfBuffer, { updateMetadata: false })];
                     case 1:
                         _a.pdf = _b.sent();
                         return [2];
@@ -88,25 +64,40 @@ var PDF = (function () {
             });
         });
     };
+    PDF.prototype.setPage = function (pageIndex) {
+        this.pageIndex = pageIndex;
+    };
     PDF.prototype.getPages = function () {
         return this.pdf.getPages();
     };
-    PDF.prototype.getUpdatedPDF = function () {
-        return this.preSigned.pdf;
+    PDF.prototype.setSigner = function (signer) {
+        this.signer = signer;
     };
     PDF.prototype.addImage = function (name, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var embedImage;
+            return __generator(this, function (_a) {
+                this.images[name] = data;
+                return [2];
+            });
+        });
+    };
+    PDF.prototype.setOperators = function (operator) {
+        this.operators = operator;
+    };
+    PDF.prototype.getPreparedPDF = function () {
+        return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.pdf.embedPng(data)];
+                    case 0: return [4, this.updateDictionary()];
                     case 1:
-                        embedImage = _a.sent();
-                        this.xObject[name] = embedImage.ref;
-                        return [2];
+                        _a.sent();
+                        return [2, this.preparedPdf.pdf];
                 }
             });
         });
+    };
+    PDF.prototype.enableOpacity = function () {
+        this.opacity = true;
     };
     PDF.prototype.getPdfBuffer = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -121,55 +112,166 @@ var PDF = (function () {
             });
         });
     };
-    PDF.prototype.updateDictionary = function (signatureId, reason, operators, page) {
+    PDF.prototype.updateDictionary = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var signatureDate, SIGNATURE_LENGTH, pdfBuffer, imageBuffer, preObject, _a, pdf, placeholderLength, byteRange1;
-            return __generator(this, function (_b) {
-                if (!this.pdf) {
-                    throw new Error("NO_PDF");
+            var snapshot, page, regular, bold, signatureDate, IMGObjs, _i, _a, key, imageBuffer, imageBytes, signatureDict, signatureDictRef, signatureIndex, widgetDict, widgetDictRef, context, rectArray, _b, x1, y1, x2, y2, width, height, Resources, XObject, Font, gsDict, gsRef, ExtGState, regularFont, boldFont, appearanceStream, appearanceRef, oldAnnots, annots, acroForm, oldAcro, keyFields, newFields, oldFields, catalogRef, catalogDict, incrementalBytes, incrementalPdf;
+            var _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        if (!this.pdf) {
+                            throw new Error("NO_PDF");
+                        }
+                        if (!this.signer) {
+                            throw new Error("NO_SIGNER");
+                        }
+                        snapshot = this.pdf.takeSnapshot();
+                        page = this.pdf.getPage((_c = this.pageIndex) !== null && _c !== void 0 ? _c : 0);
+                        return [4, this.pdf.embedFont(pdf_lib_incremental_save_1.StandardFonts.Helvetica, {
+                                subset: true,
+                            })];
+                    case 1:
+                        regular = _d.sent();
+                        return [4, this.pdf.embedFont(pdf_lib_incremental_save_1.StandardFonts.HelveticaBold, {
+                                subset: true,
+                            })];
+                    case 2:
+                        bold = _d.sent();
+                        signatureDate = new Date();
+                        IMGObjs = {};
+                        _i = 0, _a = Object.keys(this.images);
+                        _d.label = 3;
+                    case 3:
+                        if (!(_i < _a.length)) return [3, 6];
+                        key = _a[_i];
+                        imageBuffer = this.images[key];
+                        return [4, this.pdf.embedPng(imageBuffer)];
+                    case 4:
+                        imageBytes = _d.sent();
+                        IMGObjs[key] = imageBytes.ref;
+                        _d.label = 5;
+                    case 5:
+                        _i++;
+                        return [3, 3];
+                    case 6:
+                        snapshot.markRefForSave(page.ref);
+                        signatureDict = this.pdf.context.obj({
+                            Type: "Sig",
+                            Filter: "Adobe.PPKLite",
+                            SubFilter: "adbe.pkcs7.detached",
+                            ByteRange: [
+                                0,
+                                DEFAULT_BYTE_RANGE_PLACEHOLDER,
+                                DEFAULT_BYTE_RANGE_PLACEHOLDER,
+                                DEFAULT_BYTE_RANGE_PLACEHOLDER,
+                            ],
+                            Contents: pdf_lib_incremental_save_1.PDFHexString.of("0".repeat(SIGNATURE_LENGTH)),
+                            Reason: pdf_lib_incremental_save_1.PDFString.of(this.signer.reason),
+                            M: pdf_lib_incremental_save_1.PDFString.fromDate(signatureDate),
+                        });
+                        signatureDictRef = this.pdf.context.register(signatureDict);
+                        signatureIndex = this.pdf.getForm().getFields().length + 1;
+                        widgetDict = this.pdf.context.obj({
+                            Type: pdf_lib_incremental_save_1.PDFName.of("Annot"),
+                            Subtype: pdf_lib_incremental_save_1.PDFName.of("Widget"),
+                            FT: pdf_lib_incremental_save_1.PDFName.of("Sig"),
+                            Rect: [
+                                this.signer.x,
+                                this.signer.y,
+                                this.signer.x + this.signer.width,
+                                this.signer.y + this.signer.height,
+                            ],
+                            V: signatureDictRef,
+                            T: pdf_lib_incremental_save_1.PDFString.of("Signature".concat(signatureIndex)),
+                            F: pdf_lib_incremental_save_1.PDFNumber.of(4),
+                            P: page.ref,
+                        });
+                        widgetDictRef = this.pdf.context.register(widgetDict);
+                        context = widgetDict.context;
+                        rectArray = widgetDict.lookup(pdf_lib_incremental_save_1.PDFName.of("Rect"), pdf_lib_incremental_save_1.PDFArray);
+                        _b = rectArray
+                            .asArray()
+                            .map(function (n) { return n.asNumber(); }), x1 = _b[0], y1 = _b[1], x2 = _b[2], y2 = _b[3];
+                        width = x2 - x1;
+                        height = y2 - y1;
+                        Resources = {};
+                        XObject = context.obj(IMGObjs);
+                        Resources["XObject"] = XObject;
+                        Font = context.obj({ Regular: regular.ref, Bold: bold.ref });
+                        Resources["Font"] = Font;
+                        if (this.opacity) {
+                            gsDict = this.pdf.context.obj({
+                                Type: "ExtGState",
+                                ca: 0.5,
+                                CA: 0.5,
+                            });
+                            gsRef = this.pdf.context.register(gsDict);
+                            ExtGState = this.pdf.context.obj({ Opacity: gsRef });
+                            Resources["ExtGState"] = ExtGState;
+                        }
+                        regularFont = {
+                            name: pdf_lib_incremental_save_1.PDFName.of("Regular"),
+                            font: regular,
+                        };
+                        boldFont = {
+                            name: pdf_lib_incremental_save_1.PDFName.of("Bold"),
+                            font: bold,
+                        };
+                        appearanceStream = context.formXObject(this.operators(regularFont, boldFont), {
+                            Resources: Resources,
+                            BBox: context.obj([0, 0, width, height]),
+                            Matrix: context.obj([1, 0, 0, 1, 0, 0]),
+                        });
+                        appearanceRef = context.register(appearanceStream);
+                        widgetDict.set(pdf_lib_incremental_save_1.PDFName.of("AP"), context.obj({ N: appearanceRef }));
+                        oldAnnots = page.node.lookupMaybe(pdf_lib_incremental_save_1.PDFName.of("Annots"), pdf_lib_incremental_save_1.PDFArray);
+                        annots = pdf_lib_incremental_save_1.PDFArray.withContext(context);
+                        if (oldAnnots)
+                            oldAnnots.asArray().forEach(function (ref) { return annots.push(ref); });
+                        annots.push(widgetDictRef);
+                        page.node.set(pdf_lib_incremental_save_1.PDFName.of("Annots"), annots);
+                        oldAcro = this.pdf.catalog.lookupMaybe(pdf_lib_incremental_save_1.PDFName.of("AcroForm"), pdf_lib_incremental_save_1.PDFDict);
+                        if (oldAcro) {
+                            acroForm = context.obj({});
+                            oldAcro.keys().forEach(function (key) { return acroForm.set(key, oldAcro.get(key)); });
+                        }
+                        else {
+                            acroForm = context.obj({ SigFlags: pdf_lib_incremental_save_1.PDFNumber.of(3) });
+                        }
+                        keyFields = pdf_lib_incremental_save_1.PDFName.of("Fields");
+                        newFields = pdf_lib_incremental_save_1.PDFArray.withContext(context);
+                        oldFields = acroForm.lookupMaybe(keyFields, pdf_lib_incremental_save_1.PDFArray);
+                        if (oldFields)
+                            oldFields.asArray().forEach(function (ref) { return newFields.push(ref); });
+                        newFields.push(widgetDictRef);
+                        acroForm.set(keyFields, newFields);
+                        catalogRef = this.pdf.context.getObjectRef(this.pdf.catalog);
+                        catalogDict = this.pdf.context.lookup(catalogRef, pdf_lib_incremental_save_1.PDFDict);
+                        catalogDict.set(pdf_lib_incremental_save_1.PDFName.of("AcroForm"), acroForm);
+                        snapshot.markRefsForSave([catalogRef, appearanceRef]);
+                        this.pdf.context.pdfFileDetails.useObjectStreams = false;
+                        return [4, this.pdf.saveIncremental(snapshot)];
+                    case 7:
+                        incrementalBytes = _d.sent();
+                        incrementalPdf = Buffer.concat([this.pdfBuffer, incrementalBytes]);
+                        this.preparedPdf = node_signpdf_1.SignPdf.preparePdfForSigning(incrementalPdf);
+                        return [2];
                 }
-                signatureDate = new Date();
-                SIGNATURE_LENGTH = 15000;
-                pdfBuffer = fs_1.default.readFileSync("./signedpdf_f1.pdf");
-                imageBuffer = fs_1.default.readFileSync("./signature.png");
-                pdfBuffer = (0, signpdf_1.plainAddPlaceholder)({
-                    pdfBuffer: pdfBuffer,
-                    name: signatureId,
-                    location: "",
-                    contactInfo: "",
-                    reason: reason,
-                    signatureLength: SIGNATURE_LENGTH,
-                });
-                preObject = new signpdf_1.default.SignPdf();
-                _a = preObject.sign(pdfBuffer, true), pdf = _a.pdf, placeholderLength = _a.placeholderLength, byteRange1 = _a.byteRange1;
-                console.log({ placeholderLength: placeholderLength });
-                this.preSigned = {
-                    pdf: pdf,
-                    placeholderLength: placeholderLength,
-                    byteRange: byteRange1,
-                };
-                return [2];
             });
         });
     };
     PDF.prototype.sign = function (apiSignatures) {
         return __awaiter(this, void 0, void 0, function () {
-            var _i, _a, hash, signature, binaryString, bytes, i, byteBuffer, signedObj, signedPdfBuffer;
+            var signer, _i, _a, hash, signature, signedPdfBuffer;
             return __generator(this, function (_b) {
-                if (!this.pdf) {
+                if (!this.pdf && !this.pdfBuffer) {
                     throw new Error("NO_PDF");
                 }
+                signer = new node_signpdf_1.SignPdf();
                 for (_i = 0, _a = apiSignatures.hashes; _i < _a.length; _i++) {
                     hash = _a[_i];
                     signature = hash.content;
-                    binaryString = Buffer.from(signature, "base64").toString("latin1");
-                    bytes = new Uint8Array(binaryString.length);
-                    for (i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                    byteBuffer = bytes.buffer;
-                    signedObj = new signpdf_1.default.SignPdf();
-                    signedPdfBuffer = signedObj.sign(this.preSigned.pdf, false, byteBuffer, this.preSigned.placeholderLength, this.preSigned.byteRange);
+                    signedPdfBuffer = signer.sign(this.preparedPdf.pdf, Buffer.from(signature, "base64"), this.preparedPdf.placeholderLength, this.preparedPdf.byteRange1);
                     return [2, signedPdfBuffer];
                 }
                 return [2];
