@@ -33,14 +33,13 @@ Por defecto la librería inicia con los parámetros de desarrollo (certificado d
 const { FirmaGob, File } = new FirmaGob();
 
 const gob = new FirmaGob();
-const file = new File();
 
-const remote = await file.fromRemote("linkToPdf");
+const remote = await File.fromRemote("linkToPdf");
 gob.addPDF(remote.base64, remote.checksum); // agrega pdf
 
 // o también desde un archivo local
 
-const local = file.fromLocal("pathToPdf");
+const local = File.fromLocal("pathToPdf");
 gob.addPDF(local.base64, local.checksum); // agrega pdf
 
 // firmar documentos y recibir respuesta
@@ -62,14 +61,13 @@ luego ya puedes ejecutar `node tuarchivo.js`
 const { FirmaGob, File } = new FirmaGob();
 
 const gob = new FirmaGob();
-const file = new File();
 
-const hash = await file.fromRemoteToHash("linkToPdf"); // agrega hash
+const hash = await File.fromRemoteToHash("linkToPdf"); // agrega hash
 gob.addHash(hash);
 
 // o también desde un archivo local
 
-const hash = file.fromLocalToHash("pathToPdf");
+const hash = File.fromLocalToHash("pathToPdf");
 gob.addHash(hash); // agrega hash
 
 // firmar documentos y recibir respuesta
@@ -107,7 +105,6 @@ Establece si el certificado es de proposito general o desatendido
 Parámetros permitidos:
 
 - Purpose.ATENDIDO (Propósito general)
-
 - Purpose.DESATENDIDO (Desatendido)
 
 ```ts
@@ -175,7 +172,6 @@ gob.addFiles(files: FileProps[])
 Firma los archivos previamente establecidos
 
 - **otp** Si la firma es de propósito general necesitas enviar el código OTP
-
 - **Respuesta** con documentos firmados o errores, para este método siempre existirá una clave **files** con los archivos firmados
 
 ```ts
@@ -188,7 +184,6 @@ gob.signFiles(otp?: string)
 Firma los hashes previamente establecidos con `addHash`
 
 - **otp** Si la firma es de propósito general necesitas enviar el código OTP
-
 - **Respuesta** con documentos firmados o errores, para este método siempre existirá una clave **hashes** con los certificados que deben ser agregados al archivo PDF
 
 ```ts
@@ -279,7 +274,10 @@ pdf.setOperators((regular, bold) => [
     height: signer.height,
     color: rgb(0.95, 0.95, 0.95),
     borderWidth: 1,
-    borderColor: rgb(0.8, 0.8, 0.8),
+    borderColor: rgb(0.9, 0.9, 0.9),
+    rotate: degrees(0),
+    xSkew: degrees(0),
+    ySkew: degrees(0),
   }),
   popGraphicsState(),
 
@@ -292,9 +290,7 @@ pdf.setOperators((regular, bold) => [
     xSkew: degrees(0),
     ySkew: degrees(0),
   }),
-
   setCharacterSpacing(-0.8),
-
   ...drawTextSegments(
     [
       { segments: [{ texto: "Firmado por", fontName: regular.name }] },
@@ -349,7 +345,7 @@ const signedPDF = pdf.sign(outputFromFirmaGob);
 ### Ejemplo completo de uso
 
 ```ts
-import { FirmaGob, File, PDF } from "firma-gob";
+import { FirmaGob, File, PDF, SignerInfo } from "firma-gob";
 
 const signer: SignerInfo = {
   reason: "Revisión Contable",
@@ -365,8 +361,8 @@ const main = async () => {
   const file = new File();
 
   // Leer archivos
-  const signatureImagen = file.fromLocalToBytes("./signature.png");
-  const pdfBuffer = file.fromLocalToBytes("./Testing PDF.pdf");
+  const signatureImagen = File.readFile("./signature.png");
+  const pdfBuffer = File.readFile("./Testing PDF.pdf");
 
   // Preparar PDF
   await pdf.loadFromBuffer(pdfBuffer);
@@ -379,14 +375,14 @@ const main = async () => {
 
   // Obtener PDF preparado y firmarlo
   const prepared = await pdf.getPreparedPDF();
-  const hash = file.fromBufferToHash(prepared);
+  const hash = File.fromBufferToHash(prepared);
   gob.addHash(hash);
 
   const signedOut = await gob.signHashes();
   const signedPDF = pdf.sign(signedOut);
 
   // Guardar resultado
-  file.base64ToDisk("./documento-final-firmado.pdf", signedPDF);
+  File.base64ToDisk("./documento-final-firmado.pdf", signedPDF);
   console.log("PDF final guardado en ./documento-final-firmado.pdf");
 };
 
@@ -395,23 +391,17 @@ main();
 
 # File
 
-La clase `File` te ayudará a manipular tus archivos para ser usados con `FirmaGob`
-
-```js
-// crea una instancia de la clase File
-const file = new File();
-```
+La clase `File` te ayudará a manipular tus archivos para ser usados con `FirmaGob`, todos sus métodos son estáticos
 
 ### fromLocal
 
 Obtiene los datos de un archivo local y los convierte en base64
 
 - **path** Ruta del archivo en tu disco
-
 - **Respuesta** objeto { base64, checksum }
 
 ```ts
-pdf.fromLocal(path: string)
+File.fromLocal(path: string)
 
 ```
 
@@ -420,11 +410,10 @@ pdf.fromLocal(path: string)
 Obtiene los datos de un archivo local y calcula su hash (cheksum)
 
 - **path** Ruta del archivo en tu disco
-
 - **Respuesta** string hash (checksum)
 
 ```ts
-pdf.fromLocalToHash(path: string)
+File.fromLocalToHash(path: string)
 
 ```
 
@@ -433,11 +422,10 @@ pdf.fromLocalToHash(path: string)
 Obtiene un archivo pdf desde un servidor remoto y lo convierte a base64
 
 - **url** URL del archivo PDF
-
 - **Respuesta** objeto { base64, checksum }
 
 ```ts
-pdf.fromRemote(url: string)
+File.fromRemote(url: string)
 
 ```
 
@@ -446,11 +434,10 @@ pdf.fromRemote(url: string)
 Obtiene los datos de un archivo desde un servidor remoto y calcula su hash (cheksum)
 
 - **path** Ruta del archivo en tu disco
-
 - **Respuesta** string hash (checksum)
 
 ```ts
-pdf.fromRemoteToHash(url: string)
+File.fromRemoteToHash(url: string)
 
 ```
 
@@ -459,11 +446,10 @@ pdf.fromRemoteToHash(url: string)
 Convierte un archivo en base64 a buffer
 
 - **base64** archivo en base64
-
 - **Respuesta** buffer de archivo
 
 ```ts
-pdf.base64ToBuffer(base64: string)
+File.base64ToBuffer(base64: string)
 
 ```
 
@@ -472,11 +458,10 @@ pdf.base64ToBuffer(base64: string)
 Usa el buffer dado y lo almacena en el disco con el nombre especificado
 
 - **filename** nombre del archivo a guardar
-
 - **buffer** buffer de archivo
 
 ```ts
-pdf.bufferToDisk(filename: string, buffer: Buffer)
+File.bufferToDisk(filename: string, buffer: Buffer)
 
 ```
 
@@ -485,11 +470,10 @@ pdf.bufferToDisk(filename: string, buffer: Buffer)
 Almacena en el disco un archivo en base64
 
 - **filename** nombre del archivo a guardar
-
 - **base64** archivo en base64
 
 ```ts
-pdf.base64ToDisk(filename: string, base64: string)
+File.base64ToDisk(filename: string, base64: string)
 
 ```
 
