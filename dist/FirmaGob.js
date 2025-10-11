@@ -65,7 +65,8 @@ var Purpose;
 })(Purpose || (exports.Purpose = Purpose = {}));
 var FirmaGob = (function () {
     function FirmaGob() {
-        this.url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
+        this.url_desarrollo = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
+        this.url_produccion = "https://api.firma.digital.gob.cl/firma/v2/files/tickets";
         this.environment = Environment.TEST;
         this.entity = "Subsecretaría General de la Presidencia";
         this.run = "22222222";
@@ -122,12 +123,14 @@ var FirmaGob = (function () {
     };
     FirmaGob.prototype.sign = function (signPayload, otp) {
         return __awaiter(this, void 0, void 0, function () {
-            var header, THIRTY_MINUTES, expiration, tzoffset, payload, header_str, header_enc, payload_str, payload_enc, unsigned_token, signature_str, signature_enc, token, headers, body, response, responseJson, status;
+            var url, header, THIRTY_MINUTES, expiration, tzoffset, payload, header_str, header_enc, payload_str, payload_enc, unsigned_token, signature_str, signature_enc, token, headers, body, response, responseJson, status;
             var _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
+                        url = this.url_produccion;
                         if (this.environment === Environment.TEST) {
+                            url = this.url_desarrollo;
                             console.warn("Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig");
                         }
                         if (this.purpose === Purpose.ATENDIDO && !otp) {
@@ -166,7 +169,11 @@ var FirmaGob = (function () {
                             headers.OTP = otp;
                         }
                         body = JSON.stringify(__assign({ api_token_key: this.api_token_key, token: token }, signPayload));
-                        return [4, (0, node_fetch_1.default)(this.url, { method: "post", body: body, headers: headers })];
+                        return [4, (0, node_fetch_1.default)(url, {
+                                method: "post",
+                                body: body,
+                                headers: headers,
+                            })];
                     case 1:
                         response = _c.sent();
                         return [4, response.json()];

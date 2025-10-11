@@ -57,7 +57,10 @@ type SignPayload = {
 };
 
 export class FirmaGob {
-  private url = "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
+  private url_desarrollo =
+    "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
+  private url_produccion =
+    "https://api.firma.digital.gob.cl/firma/v2/files/tickets";
   private environment = Environment.TEST;
   private entity = "Subsecretaría General de la Presidencia";
   private run = "22222222";
@@ -173,7 +176,10 @@ export class FirmaGob {
    * @returns Respuesta con documentos firmados o errores
    */
   private async sign(signPayload: SignPayload, otp?: string) {
+    let url = this.url_produccion;
+
     if (this.environment === Environment.TEST) {
+      url = this.url_desarrollo;
       console.warn(
         "Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig"
       );
@@ -239,7 +245,11 @@ export class FirmaGob {
       ...signPayload,
     });
 
-    const response = await fetch(this.url, { method: "post", body, headers });
+    const response = await fetch(url, {
+      method: "post",
+      body,
+      headers,
+    });
     const responseJson = await response.json();
     const status = response.status;
 

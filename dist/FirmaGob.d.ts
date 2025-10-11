@@ -38,7 +38,8 @@ export type HashOutputProps = OutputProps & {
     hashes: FileInProps[];
 };
 export declare class FirmaGob {
-    private url;
+    private url_desarrollo;
+    private url_produccion;
     private environment;
     private entity;
     private run;
