@@ -1,17 +1,14 @@
 import {
-  PDFHexString,
-  drawText,
-  rgb,
   degrees,
-  PDFName,
-} from "pdf-lib-incremental-save";
-import type {
+  drawText,
   PDFFont,
+  PDFName,
   PDFOperator,
+  rgb,
   RGB,
   Rotation,
+  setCharacterSpacing,
 } from "pdf-lib-incremental-save";
-import { textToHex } from "./textToHex";
 
 type Segment = {
   texto: string;
@@ -88,7 +85,9 @@ export const drawTextSegments = (
       const gap = 5; // distancia entre palabras
       const textWidth = font.widthOfTextAtSize(texto, size);
 
-      const ops = drawText(PDFHexString.of(textToHex(texto)), {
+      const characterSpacingOp = setCharacterSpacing(0);
+
+      const ops = drawText(font.encodeText(texto), {
         x: cursorX,
         y: y0 - lineHeight * rowIdx,
         font: fontName,
@@ -101,7 +100,7 @@ export const drawTextSegments = (
 
       cursorX += textWidth + gap;
 
-      return ops;
+      return [characterSpacingOp, ...ops];
     });
   });
 };

@@ -1,5 +1,4 @@
-import { PDFName } from "pdf-lib-incremental-save";
-import type { PDFFont, PDFOperator, RGB, Rotation } from "pdf-lib-incremental-save";
+import { PDFFont, PDFName, PDFOperator, RGB, Rotation } from "pdf-lib-incremental-save";
 type Segment = {
     texto: string;
     font?: PDFFont;
