@@ -379,10 +379,10 @@ const main = async () => {
   gob.addHash(hash);
 
   const signedOut = await gob.signHashes();
-  const signedPDF = pdf.sign(signedOut);
+  const signedPDF = await pdf.sign(signedOut);
 
   // Guardar resultado
-  File.base64ToDisk("./documento-final-firmado.pdf", signedPDF);
+  File.bufferToDisk("./documento-final-firmado.pdf", signedPDF);
   console.log("PDF final guardado en ./documento-final-firmado.pdf");
 };
 
