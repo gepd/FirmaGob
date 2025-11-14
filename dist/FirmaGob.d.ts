@@ -1,3 +1,7 @@
+export declare enum Environment {
+    TEST = 0,
+    PRODUCTION = 1
+}
 export declare enum Purpose {
     ATENDIDO = "Prop\u00F3sito General",
     DESATENDIDO = "Desatendido"
@@ -48,7 +52,7 @@ export declare class FirmaGob {
     private secret;
     private files;
     constructor();
-    setConfig(run: string, entity: string, api_token: string, secret: string): void;
+    setConfig(run: string, entity: string, api_token: string, secret: string, environment?: Environment): void;
     setPurpose(purpose: Purpose): void;
     addJSON(content: string, checksum: string): void;
     addPDF(content: string, checksum: string, layout?: string): void;
