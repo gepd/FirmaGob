@@ -87,13 +87,23 @@ modifica los parametros de configuración de la librería.
 
 > Al modificar estos parámetros automáticamente la librería pasa a modo **producción**
 
-- **run** identificador del titular de firma, no debe contener puntos, guión ni tampoco el dígito verificador
 - **entity** código asociado a la institución a la cual pertenece el titular
 - **api_token** campo no encriptado de tipo string que contiene el código único generado a partir del registro de la aplicación
 - **secret** secreto generado por firma.gob al registrar la aplicación
+- **environment** modifica el entorno a trabajar PRODUCTION o TEST
 
 ```ts
-gob.setConfig(run: string, entity: string, api_token: string, secret: string)
+gob.setConfig(config: { entity: string, api_token: string, secret: string, envitonment?: Environment })
+```
+
+### setRun
+
+Modifica el RUN identificador del firmante
+
+- **run** identificador del titular de firma, no debe contener puntos, guión ni tampoco el dígito verificador
+
+```ts
+gob.setRun(run: string)
 ```
 
 ### setPurpose (Propósito Desatendido por defecto)
