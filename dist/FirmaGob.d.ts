@@ -1,3 +1,7 @@
+export declare enum Environment {
+    TEST = 0,
+    PRODUCTION = 1
+}
 export declare enum Purpose {
     ATENDIDO = "Prop\u00F3sito General",
     DESATENDIDO = "Desatendido"
@@ -52,6 +56,7 @@ export declare class FirmaGob {
         entity: string;
         api_token: string;
         secret: string;
+        environment?: Environment;
     }): void;
     setPurpose(purpose: Purpose): void;
     setRun(run: string): void;

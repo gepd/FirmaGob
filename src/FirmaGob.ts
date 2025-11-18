@@ -1,7 +1,7 @@
 import { createHmac } from "crypto";
 import fetch from "node-fetch";
 
-enum Environment {
+export enum Environment {
   TEST = 0,
   PRODUCTION = 1,
 }
@@ -59,6 +59,7 @@ type SignPayload = {
 export class FirmaGob {
   private url_desarrollo =
     "https://api.firma.cert.digital.gob.cl/firma/v2/files/tickets";
+
   private url_produccion =
     "https://api.firma.digital.gob.cl/firma/v2/files/tickets";
   private environment = Environment.TEST;
@@ -78,11 +79,16 @@ export class FirmaGob {
    * @param api_token Campo no encriptado de tipo string que contiene el código único generado a partir del registro de la aplicación
    * @param secret secreto generado por firma.gob al registrar la aplicación
    */
-  setConfig(props: { entity: string; api_token: string; secret: string }) {
+  setConfig(props: {
+    entity: string;
+    api_token: string;
+    secret: string;
+    environment?: Environment;
+  }) {
     this.entity = props.entity;
     this.api_token_key = props.api_token;
     this.secret = props.secret;
-    this.environment = Environment.PRODUCTION;
+    this.environment = props?.environment || Environment.TEST;
   }
 
   /**

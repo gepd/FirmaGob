@@ -2,17 +2,18 @@ import {
   degrees,
   drawImage,
   drawRectangle,
+  drawTextSegments,
+  File,
+  FirmaGob,
+  PDF,
   PDFName,
   popGraphicsState,
   pushGraphicsState,
   rgb,
   setCharacterSpacing,
   setGraphicsState,
-} from "pdf-lib-incremental-save";
-import { drawTextSegments } from "./drawTextSegments";
-import { FirmaGob } from "./FirmaGob";
-import { PDF, SignerInfo } from "./PDF";
-import { File } from "./File";
+  SignerInfo,
+} from "firma-gob";
 
 const signer: SignerInfo = {
   reason: "Revisión Contable",

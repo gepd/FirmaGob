@@ -50,14 +50,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FirmaGob = exports.Purpose = void 0;
+exports.FirmaGob = exports.Purpose = exports.Environment = void 0;
 var crypto_1 = require("crypto");
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var Environment;
 (function (Environment) {
     Environment[Environment["TEST"] = 0] = "TEST";
     Environment[Environment["PRODUCTION"] = 1] = "PRODUCTION";
-})(Environment || (Environment = {}));
+})(Environment || (exports.Environment = Environment = {}));
 var Purpose;
 (function (Purpose) {
     Purpose["ATENDIDO"] = "Prop\u00F3sito General";
@@ -79,7 +79,7 @@ var FirmaGob = (function () {
         this.entity = props.entity;
         this.api_token_key = props.api_token;
         this.secret = props.secret;
-        this.environment = Environment.PRODUCTION;
+        this.environment = (props === null || props === void 0 ? void 0 : props.environment) || Environment.TEST;
     };
     FirmaGob.prototype.setPurpose = function (purpose) {
         this.purpose = purpose;
