@@ -186,10 +186,22 @@ export class FirmaGob {
   private async sign(signPayload: SignPayload, otp?: string) {
     let url = this.url_produccion;
 
+    if (!this.run) {
+      throw new Error(
+        "El run no puede estar vacío utiliza setRun para modificarlo"
+      );
+    }
+
     if (this.environment === Environment.TEST) {
       url = this.url_desarrollo;
       console.warn(
         "Estás en el ambiente de pruebas, para cambiar a producción utiliza, setConfig"
+      );
+    }
+
+    if (this.run === "22222222") {
+      console.warn(
+        "Estás utilizando el run de pruebas, para modificarlo utiliza setRun"
       );
     }
 
