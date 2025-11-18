@@ -54,6 +54,7 @@ export declare class FirmaGob {
         secret: string;
     }): void;
     setPurpose(purpose: Purpose): void;
+    setRun(run: string): void;
     addJSON(content: string, checksum: string): void;
     addPDF(content: string, checksum: string, layout?: string): void;
     addHash(hash: string): void;

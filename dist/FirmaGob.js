@@ -84,6 +84,9 @@ var FirmaGob = (function () {
     FirmaGob.prototype.setPurpose = function (purpose) {
         this.purpose = purpose;
     };
+    FirmaGob.prototype.setRun = function (run) {
+        this.run = run;
+    };
     FirmaGob.prototype.addJSON = function (content, checksum) {
         this.files.push({
             "content-type": "application/json",

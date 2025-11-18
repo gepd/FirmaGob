@@ -96,6 +96,15 @@ export class FirmaGob {
   }
 
   /**
+   * Modifica el RUN identificador del firmante
+   * @param run run del titular de la firma no debe contener puntos,
+   * guión ni tampoco el dígito verificador
+   */
+  setRun(run: string) {
+    this.run = run;
+  }
+
+  /**
    * Agrega un archivo JSON a la lista de archivos
    * @param content Archivo en base64
    * @param checksum SHA256 del archivo
