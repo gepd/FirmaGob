@@ -75,11 +75,10 @@ var FirmaGob = (function () {
         this.secret = "27a216342c744f89b7b82fa290519ba0";
         this.files = [];
     }
-    FirmaGob.prototype.setConfig = function (run, entity, api_token, secret) {
-        this.run = run;
-        this.entity = entity;
-        this.api_token_key = api_token;
-        this.secret = secret;
+    FirmaGob.prototype.setConfig = function (props) {
+        this.entity = props.entity;
+        this.api_token_key = props.api_token;
+        this.secret = props.secret;
         this.environment = Environment.PRODUCTION;
     };
     FirmaGob.prototype.setPurpose = function (purpose) {

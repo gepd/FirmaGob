@@ -48,7 +48,11 @@ export declare class FirmaGob {
     private secret;
     private files;
     constructor();
-    setConfig(run: string, entity: string, api_token: string, secret: string): void;
+    setConfig(props: {
+        entity: string;
+        api_token: string;
+        secret: string;
+    }): void;
     setPurpose(purpose: Purpose): void;
     addJSON(content: string, checksum: string): void;
     addPDF(content: string, checksum: string, layout?: string): void;

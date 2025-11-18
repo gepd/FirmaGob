@@ -78,11 +78,10 @@ export class FirmaGob {
    * @param api_token Campo no encriptado de tipo string que contiene el código único generado a partir del registro de la aplicación
    * @param secret secreto generado por firma.gob al registrar la aplicación
    */
-  setConfig(run: string, entity: string, api_token: string, secret: string) {
-    this.run = run;
-    this.entity = entity;
-    this.api_token_key = api_token;
-    this.secret = secret;
+  setConfig(props: { entity: string; api_token: string; secret: string }) {
+    this.entity = props.entity;
+    this.api_token_key = props.api_token;
+    this.secret = props.secret;
     this.environment = Environment.PRODUCTION;
   }
 
